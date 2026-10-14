@@ -254,6 +254,20 @@
     .basin-slots { grid-template-columns:repeat(2,1fr); }
     .basin-phase-grid { grid-template-columns:1fr; }
   }
+
+  /* Ninth-strategy comparison cards */
+  .basin-adapt-label { display:block; font-size:14px; margin-bottom:4px; }
+  .basin-adapt-help { margin:0 0 10px !important; }
+  .basin-adapt-list { display:grid; gap:7px; max-height:340px; overflow-y:auto; overscroll-behavior:contain; padding:3px 5px 3px 2px; margin:8px 0 14px; }
+  .basin-adapt-card { display:grid; grid-template-columns:1fr auto; gap:5px 9px; text-align:left; background:var(--b-panel); color:var(--b-text); border:2px solid var(--b-line); border-radius:9px; padding:10px 11px; cursor:pointer; }
+  .basin-adapt-card:hover { border-color:var(--b-teal); }
+  .basin-adapt-card.is-selected { border-color:var(--b-orange); background:var(--b-teal-soft); box-shadow:inset 3px 0 0 var(--b-orange); }
+  .basin-adapt-name { font-size:12px; font-weight:800; line-height:1.3; }
+  .basin-adapt-category { font-size:10px; color:var(--b-muted); white-space:nowrap; }
+  .basin-adapt-values { display:flex; flex-wrap:wrap; gap:5px; grid-column:1/-1; }
+  .basin-adapt-values > span { background:var(--b-app); border:1px solid var(--b-line); border-radius:5px; padding:3px 6px; font-size:11px; font-weight:600; }
+  .basin-adapt-note { grid-column:1/-1; font-size:10px; font-weight:700; color:var(--b-teal); }
+  @media(max-width:590px) { .basin-adapt-list { max-height:310px; } .basin-adapt-category { white-space:normal; } }
   @media print {
     #basin-gui { color-scheme:light; print-color-adjust:exact; -webkit-print-color-adjust:exact; }
     .basin-app { box-shadow:none; }
@@ -281,30 +295,347 @@
   renderTimer();
   setInterval(renderTimer, 1000);
   const strategies = [
-    {id:'lease',name:'Voluntary water leasing',cat:'Agriculture',cost:2,water:3,eco:0,ag:-1,dust:0},
-    {id:'fallow',name:'Permanently fallow some agricultural land',cat:'Agriculture',cost:3,water:3,eco:-1,ag:-3,dust:-1},
-    {id:'crops',name:'Change to alternate crops',cat:'Agriculture',cost:2,water:2,eco:0,ag:0,dust:0},
-    {id:'irrigation',name:'Upgrade irrigation systems',cat:'Agriculture',cost:3,water:2,eco:0,ag:2,dust:0},
-    {id:'phragmites',name:'Control phragmites and restore native vegetation',cat:'Habitat',cost:4,water:2,eco:3,ag:0,dust:1},
-    {id:'wetlands',name:'Optimize wetland flooding',cat:'Habitat',cost:1,water:0,eco:2,ag:0,dust:0},
-    {id:'habitat-conservation',name:'Conserve habitat from development',cat:'Habitat',cost:2,water:0,eco:3,ag:1,dust:0},
-    {id:'reuse',name:'Wastewater reuse',cat:'Infrastructure',cost:4,water:0,eco:0,ag:0,dust:0,specialSupply:2,specialLake:-1,note:'+2 Basin Supply, −1 Lake'},
-    {id:'berms',name:'Use berms, causeways and impoundments to manage portions of the lake',cat:'Infrastructure',cost:3,water:0,eco:1,ag:0,dust:1},
-    {id:'delivery',name:'Reduce losses from delivery systems',cat:'Infrastructure',cost:3,water:1,eco:-1,ag:1,dust:0},
-    {id:'storage',name:'Increase storage capacity',cat:'Infrastructure',cost:4,water:0,eco:-1,ag:1,dust:0},
-    {id:'dust-control',name:'Suppress dust from exposed hot spots',cat:'Infrastructure',cost:5,water:-1,eco:0,ag:0,dust:2},
-    {id:'turf',name:'Replace turf with water-wise landscaping',cat:'Municipal',cost:3,water:2,eco:1,ag:0,dust:0},
-    {id:'controllers',name:'Improve watering efficiency',cat:'Municipal',cost:1,water:1,eco:0,ag:0,dust:0},
-    {id:'new-landscape',name:'Employ water-wise landscaping in new development',cat:'Municipal',cost:1,water:2,eco:1,ag:0,dust:0},
-    {id:'institutional',name:'Institutional conservation',cat:'Municipal',cost:2,water:1,eco:0,ag:0,dust:0},
-    {id:'smaller-lots',name:'Reduce irrigated area for new development',cat:'Municipal',cost:0,water:1,eco:1,ag:1,dust:0},
-    {id:'indoor',name:'Increase indoor water efficiency',cat:'Municipal',cost:1,water:0,eco:0,ag:0,dust:0},
-    {id:'commercial',name:'Commercial and light industrial conservation',cat:'Municipal',cost:2,water:1,eco:0,ag:0,dust:0},
-    {id:'industrial',name:'Industrial water efficiency',cat:'Industry',cost:3,water:1,eco:0,ag:0,dust:0},
-    {id:'mining',name:'Reduce mining-operation water depletions',cat:'Industry',cost:3,water:2,eco:1,ag:0,dust:0},
-    {id:'reservoir',name:'Modify seasonal reservoir operations',cat:'Operations',cost:1,water:0,eco:1,ag:1,dust:0},
-    {id:'cloud',name:'Cloud seeding',cat:'Operations',cost:0,water:1,eco:1,ag:1,dust:0,max:1}
-  ];
+    {
+        "id": "lease",
+        "name": "Expand compensated, voluntary water leasing (ex. split-season leasing)",
+        "cat": "Agriculture",
+        "cost": 2,
+        "water": 2,
+        "eco": 0,
+        "ag": 1,
+        "dust": 0
+    },
+    {
+        "id": "fallow",
+        "name": "Permanently retire some agricultural water (ex. purchase agricultural water rights and transition to dry farming)",
+        "cat": "Agriculture",
+        "cost": 4,
+        "water": 3,
+        "eco": -1,
+        "ag": -3,
+        "dust": -1
+    },
+    {
+        "id": "crops",
+        "name": "Change to alternate crops (ex. alfalfa to winter wheat)",
+        "cat": "Agriculture",
+        "cost": 2,
+        "water": 2,
+        "eco": 0,
+        "ag": 0,
+        "dust": 0
+    },
+    {
+        "id": "irrigation",
+        "name": "Upgrade irrigation systems (ex. low-elevation sprinklers)",
+        "cat": "Agriculture",
+        "cost": 3,
+        "water": 2,
+        "eco": 0,
+        "ag": 2,
+        "dust": 0
+    },
+    {
+        "id": "phragmites",
+        "name": "Remove/control phragmites and restore native vegetation throughout the watershed",
+        "cat": "Habitat",
+        "cost": 3,
+        "water": 2,
+        "eco": 3,
+        "ag": 0,
+        "dust": 1
+    },
+    {
+        "id": "wetlands",
+        "name": "Optimize timing and rotation of wetland flooding to deliver more water to GSL while maintaining wetland habitat benefits",
+        "cat": "Habitat",
+        "cost": 1,
+        "water": 1,
+        "eco": 1,
+        "ag": 0,
+        "dust": 0
+    },
+    {
+        "id": "habitat-conservation",
+        "name": "Conserve habitat from development (including agricultural lands) (ex. conservation easments, agricultural protection areas, etc.)",
+        "cat": "Habitat",
+        "cost": 2,
+        "water": 0,
+        "eco": 3,
+        "ag": 1,
+        "dust": 0
+    },
+    {
+        "id": "forest",
+        "name": "Manage forests for water supply (ex. thinning and restoration to alter snow accumulation and runoff)",
+        "cat": "Habitat",
+        "cost": 2,
+        "water": 0,
+        "eco": 1,
+        "ag": 0,
+        "dust": 0
+    },
+    {
+        "id": "reuse",
+        "name": "Wastewater reuse (ex. sewage treatment for potable or irrigation use)",
+        "cat": "Infrastructure",
+        "cost": 4,
+        "water": 0,
+        "eco": 0,
+        "ag": 0,
+        "dust": 0,
+        "specialSupply": 2,
+        "specialLake": -1,
+        "note": "+2 Basin Supply, −1 Lake"
+    },
+    {
+        "id": "berms",
+        "name": "Use new or existing berms, causeways, & impoundments to manage wetlands",
+        "cat": "Infrastructure",
+        "cost": 3,
+        "water": 0,
+        "eco": 2,
+        "ag": 0,
+        "dust": 0
+    },
+    {
+        "id": "berms-salinity",
+        "name": "Use new or existing berms, causeways, & impoundments to control salinity levels and dust",
+        "cat": "Infrastructure",
+        "cost": 3,
+        "water": 0,
+        "eco": 1,
+        "ag": 0,
+        "dust": 1
+    },
+    {
+        "id": "delivery",
+        "name": "Reduce losses from delivery systems (ex. pipe or line canals used for regional and local distribution)",
+        "cat": "Infrastructure",
+        "cost": 3,
+        "water": 1,
+        "eco": -1,
+        "ag": 1,
+        "dust": 0
+    },
+    {
+        "id": "storage",
+        "name": "Increase storage capacity (ex. build new reservoirs, expand groundwater storage)",
+        "cat": "Infrastructure",
+        "cost": 4,
+        "water": 0,
+        "eco": -1,
+        "ag": 1,
+        "dust": 0,
+        "specialSupply": 1,
+        "specialLake": -1,
+        "note": "+1 Basin Supply, −1 Lake"
+    },
+    {
+        "id": "dust-control",
+        "name": "Use management and engineered solutions to suppress dust from exposed hot spots",
+        "cat": "Infrastructure",
+        "cost": 5,
+        "water": -1,
+        "eco": 0,
+        "ag": 0,
+        "dust": 2
+    },
+    {
+        "id": "turf",
+        "name": "Replace current turf with waterwise landscaping",
+        "cat": "Municipal",
+        "cost": 3,
+        "water": 2,
+        "eco": 1,
+        "ag": 0,
+        "dust": 0
+    },
+    {
+        "id": "new-landscape",
+        "name": "Employ waterwise landscaping in new development (ex. limit decorative turf)",
+        "cat": "Municipal",
+        "cost": 1,
+        "water": 2,
+        "eco": 1,
+        "ag": 0,
+        "dust": 0
+    },
+    {
+        "id": "controllers",
+        "name": "Improve watering efficiency (ex. audits, smart controllers)",
+        "cat": "Municipal",
+        "cost": 0,
+        "water": 2,
+        "eco": 0,
+        "ag": 0,
+        "dust": 0
+    },
+    {
+        "id": "institutional",
+        "name": "Institutional conservation (ex. parks, golf, churches)",
+        "cat": "Municipal",
+        "cost": 2,
+        "water": 1,
+        "eco": 0,
+        "ag": 0,
+        "dust": 0
+    },
+    {
+        "id": "smaller-lots",
+        "name": "Reduce irrigated area for new development (ex. smaller lots)",
+        "cat": "Municipal",
+        "cost": 0,
+        "water": 1,
+        "eco": 1,
+        "ag": 1,
+        "dust": 0
+    },
+    {
+        "id": "indoor",
+        "name": "Increase indoor water efficiency",
+        "cat": "Municipal",
+        "cost": 1,
+        "water": 0,
+        "eco": 0,
+        "ag": 0,
+        "dust": 0
+    },
+    {
+        "id": "commercial",
+        "name": "Commercial & light industrial conservation",
+        "cat": "Municipal",
+        "cost": 2,
+        "water": 1,
+        "eco": 0,
+        "ag": 0,
+        "dust": 0
+    },
+    {
+        "id": "pricing",
+        "name": "Consumer water pricing (ex. cities and other providers charge higher or tiered water rates to their customers to incentivize conservation)",
+        "cat": "Municipal",
+        "cost": 1,
+        "water": 1,
+        "eco": 0,
+        "ag": 0,
+        "dust": 0
+    },
+    {
+        "id": "take-or-pay",
+        "name": "Reformat take-or-pay policy",
+        "cat": "Municipal",
+        "cost": 1,
+        "water": 1,
+        "eco": 0,
+        "ag": 0,
+        "dust": 0
+    },
+    {
+        "id": "urban-forest",
+        "name": "Reduce the urban forest",
+        "cat": "Municipal",
+        "cost": 1,
+        "water": 1,
+        "eco": -1,
+        "ag": 0,
+        "dust": 0
+    },
+    {
+        "id": "industrial",
+        "name": "Industrial water efficiency",
+        "cat": "Industry",
+        "cost": 3,
+        "water": 1,
+        "eco": 0,
+        "ag": 0,
+        "dust": 0
+    },
+    {
+        "id": "mining",
+        "name": "Reduce mining depletions",
+        "cat": "Industry",
+        "cost": 3,
+        "water": 2,
+        "eco": 1,
+        "ag": 0,
+        "dust": 0
+    },
+    {
+        "id": "cloud",
+        "name": "Cloud seeding",
+        "cat": "Operations",
+        "cost": 0,
+        "water": 1,
+        "eco": 1,
+        "ag": 1,
+        "dust": 0,
+        "max": 1
+    },
+    {
+        "id": "reservoir",
+        "name": "Modify seasonal & multi-year flood operations & reservoir rules",
+        "cat": "Operations",
+        "cost": 1,
+        "water": 1,
+        "eco": 1,
+        "ag": 0,
+        "dust": 0
+    },
+    {
+        "id": "instream",
+        "name": "In-stream flow targets",
+        "cat": "Operations",
+        "cost": 1,
+        "water": 1,
+        "eco": 2,
+        "ag": 0,
+        "dust": 0
+    },
+    {
+        "id": "gsl-account",
+        "name": "Basin wide GSL account",
+        "cat": "Operations",
+        "cost": 1,
+        "water": 1,
+        "eco": 1,
+        "ag": 0,
+        "dust": 0
+    },
+    {
+        "id": "aquifer",
+        "name": "Aquifer storage and recovery",
+        "cat": "Operations",
+        "cost": 2,
+        "water": 0,
+        "eco": -1,
+        "ag": 0,
+        "dust": 0,
+        "specialSupply": 1,
+        "specialLake": -1,
+        "note": "+1 Basin Supply, −1 Lake"
+    },
+    {
+        "id": "import",
+        "name": "Interstate water import",
+        "cat": "Operations",
+        "cost": 5,
+        "water": 2,
+        "eco": 0,
+        "ag": 0,
+        "dust": 0
+    },
+    {
+        "id": "newfoundland",
+        "name": "Newfoundland basin",
+        "cat": "Operations",
+        "cost": 3,
+        "water": 1,
+        "eco": 0,
+        "ag": 0,
+        "dust": -1
+    }
+];
   const futures = [
     {id:'drought',name:'Extreme Drought',delta:-4,lake:-2,supply:-2,description:'A sustained dry period sharply reduces reliable flows to both basin users and the Great Salt Lake.'},
     {id:'hot-dry',name:'Hotter and Drier',delta:-2,lake:-1,supply:-1,description:'Warmer conditions increase losses and reduce reliable water even when precipitation is near normal.'},
@@ -626,7 +957,7 @@
       const a=byId(adaptId);
       const allocation=a&&a.water>0?`<p>Allocate the added water benefit.</p><div class="basin-trays"><div class="basin-tray basin-lake"><span>Lake</span><div class="basin-stepper"><button type="button" data-adapt-allocate="lake-minus" ${adaptLake<=0?'disabled':''}>−</button><strong>${adaptLake}</strong><button type="button" data-adapt-allocate="lake-plus" ${adaptSupply<=0?'disabled':''}>+</button></div></div><div class="basin-tray basin-supply"><span>Basin supply</span><div class="basin-stepper"><button type="button" data-adapt-allocate="supply-minus" ${adaptSupply<=0?'disabled':''}>−</button><strong>${adaptSupply}</strong><button type="button" data-adapt-allocate="supply-plus" ${adaptLake<=0?'disabled':''}>+</button></div></div></div>`:'';
       const special=a?.note?`<p class="basin-special-water">Special adjustment: ${a.note}.</p>`:'';
-      panel.innerHTML=`<div class="basin-phase-grid"><div><h2>Optional ninth strategy</h2><p>The group may respond after seeing the water future. The ninth card’s cost is doubled; all other scores are normal.</p><div class="basin-event"><label for="adapt-select"><strong>Choose from the full menu</strong></label><select id="adapt-select">${eligible.map(s=>`<option value="${s.id}" ${s.id===adaptId?'selected':''}>${s.name}</option>`).join('')}</select>${a?`<p><b>${a.name}</b><br>Cost ${a.cost} × 2 = <b>${a.cost*2}</b> · Water ${a.water} · Ecosystem ${a.eco} · Agriculture ${a.ag} · Dust ${a.dust}</p>${special}${allocation}<button type="button" class="basin-primary" data-apply-adapt>Add ninth strategy</button>`:'<p>No eligible strategy remains.</p>'}</div></div><div><h2>Decision prompt</h2><p>Does this adaptation solve the problem created by the water future, and is the added cost worth it?</p><button type="button" class="basin-outline" data-advance="results">Skip adaptation &amp; view results</button></div></div>`;
+      panel.innerHTML=`<div class="basin-phase-grid"><div><h2>Optional ninth strategy</h2><p>The group may respond after seeing the water future. The ninth card’s cost is doubled; all other scores are normal.</p><div class="basin-event"><strong class="basin-adapt-label">Choose from the full strategy menu</strong><p class="basin-adapt-help">Select a card to review its impact. The cost shown is already doubled.</p><div class="basin-adapt-list" role="group" aria-label="Available ninth strategies">${eligible.map(s=>`<button type="button" class="basin-adapt-card ${s.id===adaptId?'is-selected':''}" data-select-adapt="${s.id}" aria-pressed="${s.id===adaptId?'true':'false'}"><span class="basin-adapt-name">${escapeHtml(s.name)}</span><span class="basin-adapt-category">${escapeHtml(s.cat)}</span><span class="basin-adapt-values"><span><b>Cost ${s.cost*2}</b></span><span>Water ${s.water>0?'+':''}${s.water}</span><span>Eco ${s.eco>0?'+':''}${s.eco}</span><span>Ag ${s.ag>0?'+':''}${s.ag}</span><span>Dust ${s.dust>0?'+':''}${s.dust}</span></span>${s.note?`<span class="basin-adapt-note">Special: ${escapeHtml(s.note)}</span>`:''}</button>`).join('')}</div>${a?`<p><b>${a.name}</b><br>Cost ${a.cost} × 2 = <b>${a.cost*2}</b> · Water ${a.water} · Ecosystem ${a.eco} · Agriculture ${a.ag} · Dust ${a.dust}</p>${special}${allocation}<button type="button" class="basin-primary" data-apply-adapt>Add ninth strategy</button>`:'<p>No eligible strategy remains.</p>'}</div></div><div><h2>Decision prompt</h2><p>Does this adaptation solve the problem created by the water future, and is the added cost worth it?</p><button type="button" class="basin-outline" data-advance="results">Skip adaptation &amp; view results</button></div></div>`;
       renderNavState();
     }
     if(step==='results'){
@@ -655,6 +986,20 @@
       if(action==='supply-minus'&&supply>0){supply--;lake++;}
       renderScore(); return;
     }
+    const adaptChoice=e.target.closest('[data-select-adapt]'); if(adaptChoice){
+      if(phase!=='adapt') return;
+      const id=adaptChoice.dataset.selectAdapt;
+      if(!eligibleAdaptStrategies().some(s=>s.id===id)) return;
+      const list=root.querySelector('.basin-adapt-list');
+      const scrollTop=list?list.scrollTop:0;
+      adaptId=id;
+      const strategy=byId(adaptId);
+      adaptLake=Math.max(0,strategy?.water||0);
+      adaptSupply=0;
+      setStep('adapt');
+      const restored=root.querySelector('.basin-adapt-list'); if(restored) restored.scrollTop=scrollTop;
+      return;
+    }
     const adaptAllocation=e.target.closest('[data-adapt-allocate]'); if(adaptAllocation){
       const action=adaptAllocation.dataset.adaptAllocate;
       if(action==='lake-plus'&&adaptSupply>0){adaptSupply--;adaptLake++;}
@@ -667,16 +1012,6 @@
   });
   root.addEventListener('click',e=>{if(e.target.closest('button')&&!e.target.closest('[data-submit-report]')) setTimeout(queueRoomSync,0);});
   root.querySelector('#basin-filter').addEventListener('change',renderCards);
-  root.addEventListener('change',e=>{
-    if(e.target.id==='adapt-select'){
-      adaptId=e.target.value;
-      const a=byId(adaptId);
-      adaptLake=Math.max(0,a?.water||0);
-      adaptSupply=0;
-      setStep('adapt');
-      queueRoomSync();
-    }
-  });
   root.addEventListener('input',e=>{
     if(!e.target.matches('[data-report]')) return;
     if(e.target.dataset.report==='participants') reportParticipants=e.target.value;
