@@ -104,7 +104,7 @@
           <div class="basin-room-note" id="basin-room-note">Changes save for everyone using this room link.</div>
         </div>
         <div id="basin-slots" class="basin-slots"></div>
-        <div class="basin-allocation-intro" id="basin-allocation-intro"><span class="basin-stage-kicker">STEP 1 COMPLETE · 8 STRATEGIES SELECTED</span><h2>Allocate your water</h2><p>Decide together how to share the water benefit between the Great Salt Lake and Basin Supply. When ready, confirm your allocation to draw your water future.</p><button type="button" class="basin-outline" data-edit-package>Edit selected strategies</button></div>
+        <div class="basin-allocation-intro" id="basin-allocation-intro"><span class="basin-stage-kicker">STEP 1 COMPLETE · 8 STRATEGIES SELECTED</span><h2>Allocate your water</h2><p>Decide together how to share the water benefit between the Great Salt Lake and Basin Supply. When ready, confirm your allocation to draw your water future.</p><button type="button" class="basin-outline" data-edit-package><span aria-hidden="true">←</span> Edit selected strategies</button></div>
 
         <div class="basin-allocation">
           <div class="basin-allocation-head">
@@ -1044,6 +1044,9 @@
     renderCards();renderSlots();renderScore();
   }
   function setStep(step){
+    // Retain the ninth-strategy list position when water allocation redraws this screen.
+    const previousAdaptList = root.querySelector('.basin-adapt-list');
+    const previousAdaptScrollTop = previousAdaptList ? previousAdaptList.scrollTop : null;
     if(step!==phase){
       const canAdvance=(phase==='build'&&step==='shock'&&selected.length===8)||(phase==='shock'&&step==='adapt'&&waterFuture)||(phase==='adapt'&&step==='results');
       if(!canAdvance) return;
@@ -1079,6 +1082,9 @@
       const special=a?.note?`<p class="basin-special-water">Special adjustment: ${a.note}.</p>`:'';
       panel.innerHTML=`<div class="basin-phase-grid"><div><h2>Optional ninth strategy</h2><p>The group may respond after seeing the water future. All non-cost scores remain normal.</p><div class="basin-double-cost-warning" role="note"><strong>⚠ Ninth strategy costs DOUBLE (2×)</strong><span>Every ninth strategy costs twice its usual amount. Water, ecosystem, agriculture and dust scores are NOT doubled.</span></div><div class="basin-event"><strong class="basin-adapt-label">Choose from the full strategy menu</strong><p class="basin-adapt-help">Choose a strategy. Your selection turns bright green; costs shown are doubled.</p><div class="basin-adapt-list" role="group" aria-label="Available ninth strategies">${eligible.map(s=>`<button type="button" class="basin-adapt-card ${s.id===adaptId?'is-selected':''}" data-select-adapt="${s.id}" aria-pressed="${s.id===adaptId?'true':'false'}"><span class="basin-adapt-name">${escapeHtml(s.name)}</span><span class="basin-adapt-category">${escapeHtml(s.cat)}</span><span class="basin-adapt-values"><span class="basin-doubled-cost"><b>2× COST: ${s.cost} → ${s.cost*2}</b></span><span>Water ${s.water>0?'+':''}${s.water}</span><span>Eco ${s.eco>0?'+':''}${s.eco}</span><span>Ag ${s.ag>0?'+':''}${s.ag}</span><span>Dust ${s.dust>0?'+':''}${s.dust}</span></span>${s.note?`<span class="basin-adapt-note">Special: ${escapeHtml(s.note)}</span>`:''}</button>`).join('')}</div>${a?`${special}${allocation}<div class="basin-adapt-actions"><button type="button" class="basin-primary" data-apply-adapt>Add ninth strategy (2× cost)</button><button type="button" class="basin-outline" data-advance="results">Skip adaptation</button></div>`:'<div class="basin-adapt-actions"><button type="button" class="basin-outline" data-advance="results">Skip adaptation</button></div>'}</div></div></div>`;
       renderNavState();
+      // The green selected card and the user's scroll position stay put after +/- clicks.
+      const newAdaptList = root.querySelector('.basin-adapt-list');
+      if(newAdaptList && previousAdaptScrollTop !== null) newAdaptList.scrollTop = previousAdaptScrollTop;
     }
     if(step==='results'){
       const s=scoreState();
