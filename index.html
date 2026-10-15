@@ -6,7 +6,56 @@
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://zyztobfvnbxommziwwmg.supabase.co wss://zyztobfvnbxommziwwmg.supabase.co; object-src 'none'; base-uri 'self'; frame-ancestors 'none'">
   <title>Basin Scenarios Breakout Room</title>
-  <style>html,body{margin:0;min-height:100%;background:#f6f3eb}body{padding:12px;box-sizing:border-box}</style>
+  <style>html,body{margin:0;min-height:100%;background:#f6f3eb}body{padding:12px;box-sizing:border-box}
+#basin-gui [hidden] {display:none!important;}
+/* Guided, full-width decision screens: no longer buried below the strategy library. */
+#basin-gui .basin-main[data-stage="allocation"],
+#basin-gui .basin-main[data-stage="shock"],
+#basin-gui .basin-main[data-stage="adapt"],
+#basin-gui .basin-main[data-stage="results"] {grid-template-columns:minmax(0,1fr) minmax(245px,.36fr);}
+#basin-gui .basin-main[data-stage="allocation"] .basin-library,
+#basin-gui .basin-main[data-stage="shock"] .basin-library,
+#basin-gui .basin-main[data-stage="adapt"] .basin-library,
+#basin-gui .basin-main[data-stage="results"] .basin-library {display:none;}
+#basin-gui .basin-main[data-stage="allocation"] .basin-package,
+#basin-gui .basin-main[data-stage="shock"] .basin-package,
+#basin-gui .basin-main[data-stage="adapt"] .basin-package,
+#basin-gui .basin-main[data-stage="results"] .basin-package {padding:clamp(16px,3vw,34px);}
+#basin-gui .basin-main[data-stage="allocation"] .basin-package>.basin-panelhead,
+#basin-gui .basin-main[data-stage="allocation"] #basin-slots,
+#basin-gui .basin-main[data-stage="shock"] .basin-package>.basin-panelhead,
+#basin-gui .basin-main[data-stage="shock"] #basin-slots,
+#basin-gui .basin-main[data-stage="adapt"] .basin-package>.basin-panelhead,
+#basin-gui .basin-main[data-stage="adapt"] #basin-slots,
+#basin-gui .basin-main[data-stage="results"] .basin-package>.basin-panelhead,
+#basin-gui .basin-main[data-stage="results"] #basin-slots {display:none;}
+#basin-gui .basin-main[data-stage="shock"] .basin-allocation,
+#basin-gui .basin-main[data-stage="adapt"] .basin-allocation,
+#basin-gui .basin-main[data-stage="results"] .basin-allocation {display:none;}
+#basin-gui .basin-allocation-intro {display:none;}
+#basin-gui .basin-main[data-stage="allocation"] .basin-allocation-intro {display:block;max-width:740px;margin:0 auto 20px;text-align:center;}
+#basin-gui .basin-allocation-intro h2 {font-size:clamp(26px,3vw,38px);margin:8px 0;}
+#basin-gui .basin-allocation-intro p {font-size:15px;line-height:1.5;margin:0 0 16px;}
+#basin-gui .basin-allocation-intro button {padding:9px 15px;}
+#basin-gui .basin-stage-kicker {display:inline-block;color:var(--b-teal);font-size:12px;font-weight:900;letter-spacing:.08em;}
+#basin-gui .basin-main[data-stage="allocation"] .basin-allocation {max-width:720px;margin:auto;padding:24px;box-shadow:0 12px 28px var(--b-shadow);}
+#basin-gui .basin-main[data-stage="allocation"] .basin-allocation-head {margin-bottom:20px;}
+#basin-gui .basin-main[data-stage="allocation"] .basin-tray {min-height:145px;}
+#basin-gui .basin-main[data-stage="allocation"] .basin-primary.basin-lock {margin-top:22px;padding:16px;font-size:16px;font-weight:800;}
+#basin-gui .basin-main[data-stage="shock"] .basin-phase,
+#basin-gui .basin-main[data-stage="adapt"] .basin-phase,
+#basin-gui .basin-main[data-stage="results"] .basin-phase {margin:0;border:0;padding:0;}
+#basin-gui .basin-main[data-stage="shock"] .basin-event,
+#basin-gui .basin-main[data-stage="adapt"] .basin-event {max-width:850px;margin:0 auto;}
+#basin-gui .basin-main[data-stage="adapt"] .basin-adapt-list {max-height:190px;}
+#basin-gui .basin-main[data-stage="results"] .basin-report {max-width:850px;margin:14px auto 0;}
+#basin-gui .basin-main[data-stage="results"] [data-submit-report] {padding:17px;font-size:16px;font-weight:900;}
+@media(max-width:850px){
+ #basin-gui .basin-main[data-stage="allocation"],#basin-gui .basin-main[data-stage="shock"],#basin-gui .basin-main[data-stage="adapt"],#basin-gui .basin-main[data-stage="results"] {display:flex;flex-direction:column;}
+ #basin-gui .basin-main[data-stage="allocation"] .basin-score,#basin-gui .basin-main[data-stage="shock"] .basin-score,#basin-gui .basin-main[data-stage="adapt"] .basin-score,#basin-gui .basin-main[data-stage="results"] .basin-score {grid-column:auto;}
+}
+
+</style>
 </head>
 <body>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -55,6 +104,7 @@
           <div class="basin-room-note" id="basin-room-note">Changes save for everyone using this room link.</div>
         </div>
         <div id="basin-slots" class="basin-slots"></div>
+        <div class="basin-allocation-intro" id="basin-allocation-intro"><span class="basin-stage-kicker">STEP 1 COMPLETE · 8 STRATEGIES SELECTED</span><h2>Allocate your water</h2><p>Decide together how to share the water benefit between the Great Salt Lake and Basin Supply. When ready, confirm your allocation to draw your water future.</p><button type="button" class="basin-outline" data-edit-package>Edit selected strategies</button></div>
 
         <div class="basin-allocation">
           <div class="basin-allocation-head">
@@ -259,22 +309,38 @@
   .basin-adapt-label { display:block; font-size:14px; margin-bottom:4px; }
   .basin-adapt-help { margin:0 0 10px !important; }
   .basin-double-cost-warning { margin:8px 0 14px; padding:15px 18px; border:3px solid var(--b-orange); border-radius:10px; background:var(--b-app); color:var(--b-text); box-shadow:inset 6px 0 0 var(--b-orange); }
-  .basin-double-cost-warning strong { display:block; font-weight:900; font-size:20px; line-height:1.2; text-transform:uppercase; letter-spacing:.025em; }
+  .basin-double-cost-warning strong { display:block; font-weight:900; font-size:13.5px; line-height:1.2; text-transform:uppercase; letter-spacing:.025em; }
   .basin-double-cost-warning span { display:block; font-size:12px; margin-top:5px; font-weight:700; }
   .basin-adapt-values > .basin-doubled-cost { background:var(--b-orange); color:#102f3d; border:2px solid #875318; font-weight:900; font-size:13px; padding:4px 8px; }
   .basin-adapt-values > .basin-doubled-cost b { font-weight:900; }
   .basin-adapt-final-cost { padding:9px 11px; background:var(--b-app); border:2px solid var(--b-orange); border-radius:8px; font-size:14px; font-weight:800; }
   .basin-adapt-final-cost strong { font-size:19px; font-weight:900; }
-  .basin-adapt-list { display:grid; gap:7px; max-height:340px; overflow-y:auto; overscroll-behavior:contain; padding:3px 5px 3px 2px; margin:8px 0 14px; }
+  .basin-adapt-list { display:grid; gap:7px; max-height:190px; overflow-y:auto; overscroll-behavior:contain; padding:3px 5px 3px 2px; margin:8px 0 14px; }
   .basin-adapt-card { display:grid; grid-template-columns:1fr auto; gap:5px 9px; text-align:left; background:var(--b-panel); color:var(--b-text); border:2px solid var(--b-line); border-radius:9px; padding:10px 11px; cursor:pointer; }
   .basin-adapt-card:hover { border-color:var(--b-teal); }
-  .basin-adapt-card.is-selected { border-color:var(--b-orange); background:var(--b-teal-soft); box-shadow:inset 3px 0 0 var(--b-orange); }
+  .basin-adapt-card.is-selected { border-color:#187b32; background:#69ed87; color:#07391b; box-shadow:inset 5px 0 0 #16832e; }
+  .basin-adapt-card.is-selected .basin-adapt-category, .basin-adapt-card.is-selected .basin-adapt-note { color:#174b2a; }
+  .basin-adapt-card.is-selected .basin-adapt-values > span { color:#07391b; background:#dcffe4; border-color:#16832e; }
+  .basin-adapt-card.is-selected .basin-adapt-values > .basin-doubled-cost { background:#ffe2a3; border-color:#875318; }
   .basin-adapt-name { font-size:12px; font-weight:800; line-height:1.3; }
   .basin-adapt-category { font-size:10px; color:var(--b-muted); white-space:nowrap; }
   .basin-adapt-values { display:flex; flex-wrap:wrap; gap:5px; grid-column:1/-1; }
   .basin-adapt-values > span { background:var(--b-app); border:1px solid var(--b-line); border-radius:5px; padding:3px 6px; font-size:11px; font-weight:600; }
   .basin-adapt-note { grid-column:1/-1; font-size:10px; font-weight:700; color:var(--b-teal); }
-  @media(max-width:590px) { .basin-adapt-list { max-height:310px; } .basin-adapt-category { white-space:normal; } }
+  @media(max-width:590px) { .basin-adapt-list { max-height:175px; } .basin-adapt-category { white-space:normal; } }
+  /* Keep ninth-strategy selection and the primary action in one compact view. */
+  .basin-adapt-actions { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px; align-items:stretch; }
+  .basin-adapt-actions .basin-primary, .basin-adapt-actions .basin-outline { width:100%; margin:0 !important; min-height:42px; padding:10px 8px; text-align:center; }
+  .basin-adapt-list { scrollbar-width:thin; border:1px solid var(--b-line); border-radius:9px; }
+  .basin-adapt-list + p { margin:7px 0 5px; }
+  .basin-adapt-final-cost { margin:6px 0 !important; }
+  .basin-event:has(.basin-adapt-list) { padding:12px; }
+  .basin-event:has(.basin-adapt-list) .basin-primary { margin-top:8px; }
+  .basin-complete { min-height:520px; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:48px 20px; text-align:center; background:var(--b-board); }
+  .basin-complete-icon { width:82px; height:82px; display:grid; place-items:center; border-radius:50%; background:var(--b-green); color:white; font-size:48px; margin-bottom:22px; }
+  .basin-complete h1 { font-size:clamp(28px,4vw,44px); margin:0 0 12px; color:var(--b-navy); }
+  .basin-complete p { max-width:570px; font-size:17px; line-height:1.5; margin:6px auto; }
+  .basin-complete small { margin-top:18px; color:var(--b-muted); }
   @media print {
     #basin-gui { color-scheme:light; print-color-adjust:exact; -webkit-print-color-adjust:exact; }
     .basin-app { box-shadow:none; }
@@ -653,6 +719,8 @@
   let lake = 0, supply = 0, waterFuture = null, adapted = false, adaptId = null, adaptLake = 0, adaptSupply = 0, phase = 'build', packageLocked = false;
   let reportParticipants = '', reportHardest = '', reportTakeaway = '';
   let submittedAt = null;
+  let sharedCategory = 'Agriculture';
+  let submissionPoll = null;
   let supabaseClient = null, roomId = null, roomVersion = 0, roomChannel = null;
   let syncReady = false, applyingRemote = false, syncTimer = null, lastSyncedState = '';
   const completedSteps = new Set();
@@ -692,7 +760,7 @@
   }
   function serializeGameState(){
     return {
-      selected:[...selected],lake,supply,waterFutureId:waterFuture?.id||null,
+      selected:[...selected],lake,supply,sharedCategory,waterFutureId:waterFuture?.id||null,
       adapted,adaptId,adaptLake,adaptSupply,phase,packageLocked,
       completedSteps:[...completedSteps],reportParticipants,reportHardest,reportTakeaway,
       submittedAt,score:exportScore()
@@ -702,6 +770,8 @@
     if(!state||typeof state!=='object') return;
     applyingRemote=true;
     selected=Array.isArray(state.selected)?state.selected.filter(id=>byId(id)).slice(0,8):[];
+    sharedCategory=['Agriculture','Habitat','Infrastructure','Municipal','Industry','Operations'].includes(state.sharedCategory)?state.sharedCategory:'Agriculture';
+    root.querySelector('#basin-filter').value=sharedCategory;
     lake=Math.max(0,Number(state.lake)||0);
     supply=Math.max(0,Number(state.supply)||0);
     waterFuture=futures.find(f=>f.id===state.waterFutureId)||null;
@@ -716,7 +786,8 @@
     reportParticipants=String(state.reportParticipants||'');
     reportHardest=String(state.reportHardest||'');
     reportTakeaway=String(state.reportTakeaway||'');
-    if(Object.prototype.hasOwnProperty.call(state,'submittedAt')) submittedAt=state.submittedAt||submittedAt;
+    if(Object.prototype.hasOwnProperty.call(state,'submittedAt') && state.submittedAt) submittedAt=state.submittedAt;
+    if(submittedAt){ showCompletionScreen(); applyingRemote=false; lastSyncedState=JSON.stringify(serializeGameState()); return; }
     if(phase==='build') renderBuild(); else setStep(phase);
     applyingRemote=false;
     lastSyncedState=JSON.stringify(serializeGameState());
@@ -753,6 +824,27 @@
     clearTimeout(syncTimer);
     syncTimer=setTimeout(flushRoomSync,180);
   }
+  function showCompletionScreen(){
+    if(!submittedAt) return;
+    root.querySelector('.basin-steps').hidden=true;
+    root.querySelector('#basin-main').hidden=true;
+    let splash=root.querySelector('#basin-complete');
+    if(!splash){
+      splash=document.createElement('section');
+      splash.id='basin-complete';
+      splash.className='basin-complete';
+      splash.setAttribute('role','status');
+      splash.innerHTML='<div class="basin-complete-icon" aria-hidden="true">✓</div><h1>Thank you for playing!</h1><p><strong>Your group’s response has been submitted.</strong></p><p>Your choices and feedback will help inform the Great Salt Lake Basin Integrated Plan.</p><small>This room is complete. You may close this page.</small>';
+      root.querySelector('.basin-app').appendChild(splash);
+    }
+    splash.hidden=false;
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  async function checkRoomSubmission(){
+    if(!supabaseClient||!roomId||submittedAt) return;
+    const {data,error}=await supabaseClient.from('game_rooms').select('submitted_at').eq('id',roomId).single();
+    if(!error && data?.submitted_at){ submittedAt=data.submitted_at; showCompletionScreen(); }
+  }
   async function submitRoomReport(button){
     if(!supabaseClient||!roomId){
       root.querySelector('#basin-submit-status').textContent='This preview is not connected to a Supabase room link.';
@@ -775,8 +867,8 @@
     }
     submittedAt=data.submittedAt||new Date().toISOString();
     button.textContent='Report submitted';
-    status.textContent='Saved to the workshop results sheet. This playthrough is now locked.';
-    status.className='basin-submit-status is-success';
+    if(roomChannel) roomChannel.send({type:'broadcast',event:'room-submitted',payload:{submittedAt}}).catch(console.warn);
+    showCompletionScreen();
   }
   async function initializeCollaboration(){
     root.querySelector('#basin-room-label').textContent=`Water strategies for the Great Salt Lake Basin · ${roomCode==='preview'?'Local preview':roomCode.replace(/-/g,' ')}`;
@@ -804,16 +896,18 @@
       submittedAt=joined.submitted_at||null;
       gameStartedAt=joined.started_at?new Date(joined.started_at).getTime():Date.now();
       if(joined.state&&Object.keys(joined.state).length) applyGameState(joined.state);
+      if(submittedAt) showCompletionScreen();
       syncReady=true;
       root.querySelector('#basin-room-note').textContent='Everyone using this link shares one board. Completed steps stay locked.';
       roomChannel=supabaseClient.channel(`game-room:${roomId}`,{config:{presence:{key:session.user.id}}})
         .on('postgres_changes',{event:'UPDATE',schema:'public',table:'game_rooms',filter:`id=eq.${roomId}`},payload=>{
           if((payload.new?.version||0)>roomVersion){
             roomVersion=payload.new.version;
-            submittedAt=payload.new.submitted_at||null;
-            applyGameState(payload.new.state);
+            submittedAt=payload.new.submitted_at||submittedAt;
+            if(submittedAt) showCompletionScreen(); else applyGameState(payload.new.state);
           }
         })
+        .on('broadcast',{event:'room-submitted'},({payload})=>{if(payload?.submittedAt){submittedAt=payload.submittedAt;showCompletionScreen();}})
         .on('presence',{event:'sync'},()=>{
           const count=Object.values(roomChannel.presenceState()).flat().length;
           setLiveStatus(`${count} connected`);
@@ -826,6 +920,7 @@
           if(status==='CHANNEL_ERROR'||status==='TIMED_OUT') setLiveStatus('Connection problem','error');
         });
       if(!joined.state||!Object.keys(joined.state).length) queueRoomSync();
+      submissionPoll=setInterval(checkRoomSubmission,5000);
     }catch(error){
       console.error(error);
       setLiveStatus('Room connection failed','error');
@@ -833,7 +928,8 @@
     }
   }
   function renderCards(){
-    const filter = root.querySelector('#basin-filter').value;
+    const filter = sharedCategory;
+    root.querySelector('#basin-filter').value=sharedCategory;
     const c = counts();
     root.querySelector('#basin-filter').disabled=packageLocked;
     root.querySelector('#basin-cards').innerHTML = strategies.filter(s=>s.cat===filter).map(s=>{
@@ -874,7 +970,7 @@
     const lock=root.querySelector('#basin-lock');
     lock.hidden=packageLocked;
     lock.disabled=selected.length!==8;
-    lock.textContent=selected.length===8?'Lock package & continue':`Select ${8-selected.length} more strateg${8-selected.length===1?'y':'ies'} to continue`;
+    lock.textContent=selected.length===8?'Confirm allocation & draw water future':`Select ${8-selected.length} more strateg${8-selected.length===1?'y':'ies'} to continue`;
     const bonusKey=s.currentLake<=5?'low':s.currentLake<=9?'neutral':s.currentLake<=13?'plus-two':'plus-three';
     root.querySelectorAll('[data-bonus]').forEach(row=>row.classList.toggle('is-current',s.packageComplete&&row.dataset.bonus===bonusKey));
     const earnedBadges=Object.fromEntries(s.badges);
@@ -930,7 +1026,23 @@
       supply=Math.max(0,supply-removed);
     }
   }
-  function renderBuild(){ root.querySelector('#basin-main').hidden=false; root.querySelector('#basin-phase').hidden=true; renderCards();renderSlots();renderScore(); }
+  let editingCompletePackage=false;
+  let displayedStage='';
+  function setVisibleStage(stage){
+    const main=root.querySelector('#basin-main');
+    main.dataset.stage=stage;
+    if(stage!==displayedStage){
+      displayedStage=stage;
+      if(stage!=='build' && !applyingRemote) window.scrollTo({top:0,behavior:'smooth'});
+    }
+  }
+  function renderBuild(){
+    root.querySelector('#basin-main').hidden=false;
+    root.querySelector('#basin-phase').hidden=true;
+    if(selected.length<8) editingCompletePackage=false;
+    setVisibleStage(selected.length===8&&!editingCompletePackage?'allocation':'build');
+    renderCards();renderSlots();renderScore();
+  }
   function setStep(step){
     if(step!==phase){
       const canAdvance=(phase==='build'&&step==='shock'&&selected.length===8)||(phase==='shock'&&step==='adapt'&&waterFuture)||(phase==='adapt'&&step==='results');
@@ -942,6 +1054,7 @@
     renderNavState();
     if(step==='build'){renderBuild();return;}
     root.querySelector('#basin-main').hidden=false;
+    setVisibleStage(step);
     renderCards();
     renderSlots();
     const panel=root.querySelector('#basin-phase'); panel.hidden=false;
@@ -962,19 +1075,21 @@
         adaptSupply=0;
       }
       const a=byId(adaptId);
-      const allocation=a&&a.water>0?`<p>Allocate the added water benefit.</p><div class="basin-trays"><div class="basin-tray basin-lake"><span>Lake</span><div class="basin-stepper"><button type="button" data-adapt-allocate="lake-minus" ${adaptLake<=0?'disabled':''}>−</button><strong>${adaptLake}</strong><button type="button" data-adapt-allocate="lake-plus" ${adaptSupply<=0?'disabled':''}>+</button></div></div><div class="basin-tray basin-supply"><span>Basin supply</span><div class="basin-stepper"><button type="button" data-adapt-allocate="supply-minus" ${adaptSupply<=0?'disabled':''}>−</button><strong>${adaptSupply}</strong><button type="button" data-adapt-allocate="supply-plus" ${adaptLake<=0?'disabled':''}>+</button></div></div></div>`:'';
+      const allocation=a&&a.water>0?`<div class="basin-trays" aria-label="Allocate ninth-strategy water between lake and basin supply"><div class="basin-tray basin-lake"><span>Lake</span><div class="basin-stepper"><button type="button" data-adapt-allocate="lake-minus" ${adaptLake<=0?'disabled':''}>−</button><strong>${adaptLake}</strong><button type="button" data-adapt-allocate="lake-plus" ${adaptSupply<=0?'disabled':''}>+</button></div></div><div class="basin-tray basin-supply"><span>Basin supply</span><div class="basin-stepper"><button type="button" data-adapt-allocate="supply-minus" ${adaptSupply<=0?'disabled':''}>−</button><strong>${adaptSupply}</strong><button type="button" data-adapt-allocate="supply-plus" ${adaptLake<=0?'disabled':''}>+</button></div></div></div>`:'';
       const special=a?.note?`<p class="basin-special-water">Special adjustment: ${a.note}.</p>`:'';
-      panel.innerHTML=`<div class="basin-phase-grid"><div><h2>Optional ninth strategy</h2><p>The group may respond after seeing the water future. All non-cost scores remain normal.</p><div class="basin-double-cost-warning" role="note"><strong>⚠ Ninth strategy costs DOUBLE (2×)</strong><span>Every ninth strategy costs twice its usual amount. Water, ecosystem, agriculture and dust scores are NOT doubled.</span></div><div class="basin-event"><strong class="basin-adapt-label">Choose from the full strategy menu</strong><p class="basin-adapt-help">Select a card to review its impact. The cost shown is already doubled.</p><div class="basin-adapt-list" role="group" aria-label="Available ninth strategies">${eligible.map(s=>`<button type="button" class="basin-adapt-card ${s.id===adaptId?'is-selected':''}" data-select-adapt="${s.id}" aria-pressed="${s.id===adaptId?'true':'false'}"><span class="basin-adapt-name">${escapeHtml(s.name)}</span><span class="basin-adapt-category">${escapeHtml(s.cat)}</span><span class="basin-adapt-values"><span class="basin-doubled-cost"><b>2× COST: ${s.cost} → ${s.cost*2}</b></span><span>Water ${s.water>0?'+':''}${s.water}</span><span>Eco ${s.eco>0?'+':''}${s.eco}</span><span>Ag ${s.ag>0?'+':''}${s.ag}</span><span>Dust ${s.dust>0?'+':''}${s.dust}</span></span>${s.note?`<span class="basin-adapt-note">Special: ${escapeHtml(s.note)}</span>`:''}</button>`).join('')}</div>${a?`<p><b>${a.name}</b></p><p class="basin-adapt-final-cost">DOUBLE COST: ${a.cost} × 2 = <strong>${a.cost*2}</strong></p><p>Water ${a.water} · Ecosystem ${a.eco} · Agriculture ${a.ag} · Dust ${a.dust}</p>${special}${allocation}<button type="button" class="basin-primary" data-apply-adapt>Add ninth strategy (2× cost)</button>`:'<p>No eligible strategy remains.</p>'}</div></div><div><h2>Decision prompt</h2><p>Does this adaptation solve the problem created by the water future, and is the added cost worth it?</p><button type="button" class="basin-outline" data-advance="results">Skip adaptation &amp; view results</button></div></div>`;
+      panel.innerHTML=`<div class="basin-phase-grid"><div><h2>Optional ninth strategy</h2><p>The group may respond after seeing the water future. All non-cost scores remain normal.</p><div class="basin-double-cost-warning" role="note"><strong>⚠ Ninth strategy costs DOUBLE (2×)</strong><span>Every ninth strategy costs twice its usual amount. Water, ecosystem, agriculture and dust scores are NOT doubled.</span></div><div class="basin-event"><strong class="basin-adapt-label">Choose from the full strategy menu</strong><p class="basin-adapt-help">Choose a strategy. Your selection turns bright green; costs shown are doubled.</p><div class="basin-adapt-list" role="group" aria-label="Available ninth strategies">${eligible.map(s=>`<button type="button" class="basin-adapt-card ${s.id===adaptId?'is-selected':''}" data-select-adapt="${s.id}" aria-pressed="${s.id===adaptId?'true':'false'}"><span class="basin-adapt-name">${escapeHtml(s.name)}</span><span class="basin-adapt-category">${escapeHtml(s.cat)}</span><span class="basin-adapt-values"><span class="basin-doubled-cost"><b>2× COST: ${s.cost} → ${s.cost*2}</b></span><span>Water ${s.water>0?'+':''}${s.water}</span><span>Eco ${s.eco>0?'+':''}${s.eco}</span><span>Ag ${s.ag>0?'+':''}${s.ag}</span><span>Dust ${s.dust>0?'+':''}${s.dust}</span></span>${s.note?`<span class="basin-adapt-note">Special: ${escapeHtml(s.note)}</span>`:''}</button>`).join('')}</div>${a?`${special}${allocation}<div class="basin-adapt-actions"><button type="button" class="basin-primary" data-apply-adapt>Add ninth strategy (2× cost)</button><button type="button" class="basin-outline" data-advance="results">Skip adaptation</button></div>`:'<div class="basin-adapt-actions"><button type="button" class="basin-outline" data-advance="results">Skip adaptation</button></div>'}</div></div></div>`;
       renderNavState();
     }
     if(step==='results'){
       const s=scoreState();
-      panel.innerHTML=`<div class="basin-phase-grid"><div><h2>${s.currentSupply>=4?'Viable basin package':'Basin needs not met'}</h2><p>The final lake bonus and earned badges are shown in the live-score panel at right.</p></div><div><h2>Breakout report</h2><div class="basin-summary"><div><span>Cost</span><strong>${s.cost}</strong></div><div><span>Lake / Supply</span><strong>${s.currentLake} / ${s.currentSupply}</strong></div><div><span>Ecosystem / Ag / Dust</span><strong>${s.eco} / ${s.ag} / ${s.dust}</strong></div></div><div class="basin-report"><label>Participants<input data-report="participants" value="${escapeHtml(reportParticipants)}" placeholder="Names or initials, separated by commas"></label><label>Hardest trade-off<textarea data-report="hardest" placeholder="What did your group struggle with?">${escapeHtml(reportHardest)}</textarea></label><label>One takeaway<textarea data-report="takeaway" placeholder="What should the full room hear?">${escapeHtml(reportTakeaway)}</textarea></label><button type="button" class="basin-primary" data-submit-report ${submittedAt?'disabled':''}>${submittedAt?'Report submitted':'Submit room report'}</button><p id="basin-submit-status" class="basin-submit-status ${submittedAt?'is-success':''}">${submittedAt?'This playthrough has been submitted and locked.':''}</p></div></div></div>`;
+      panel.innerHTML=`<div class="basin-phase-grid"><div><h2>${s.currentSupply>=4?'Viable basin package':'Basin needs not met'}</h2><p>The final lake bonus and earned badges are shown in the live-score panel at right.</p></div><div><span class="basin-stage-kicker">FINAL STEP · GROUP REVIEW</span><h2>Review and submit your group results</h2><p>Complete the short report below, then select the large Submit button to finish for everyone in this room.</p><div class="basin-summary"><div><span>Cost</span><strong>${s.cost}</strong></div><div><span>Lake / Supply</span><strong>${s.currentLake} / ${s.currentSupply}</strong></div><div><span>Ecosystem / Ag / Dust</span><strong>${s.eco} / ${s.ag} / ${s.dust}</strong></div></div><div class="basin-report"><label>Participants<input data-report="participants" value="${escapeHtml(reportParticipants)}" placeholder="Names or initials, separated by commas"></label><label>Hardest trade-off<textarea data-report="hardest" placeholder="What did your group struggle with?">${escapeHtml(reportHardest)}</textarea></label><label>One takeaway<textarea data-report="takeaway" placeholder="What should the full room hear?">${escapeHtml(reportTakeaway)}</textarea></label><button type="button" class="basin-primary" data-submit-report ${submittedAt?'disabled':''}>${submittedAt?'Report submitted':'Submit room report'}</button><p id="basin-submit-status" class="basin-submit-status ${submittedAt?'is-success':''}">${submittedAt?'This playthrough has been submitted and locked.':''}</p></div></div></div>`;
       renderNavState();
     }
     renderScore();
   }
   root.addEventListener('click',e=>{
+    if(submittedAt) return;
+    if(e.target.closest('[data-edit-package]')){editingCompletePackage=true;renderBuild();return;}
     const submit=e.target.closest('[data-submit-report]'); if(submit){submitRoomReport(submit);return;}
     const step=e.target.closest('[data-step]'); if(step){setStep(step.dataset.step);return;}
     const add=e.target.closest('[data-add]'); if(add){const s=byId(add.dataset.add),c=counts();if(!packageLocked&&selected.length<8&&(c[s.id]||0)===0){resetLaterStages();selected.push(s.id);rebalance();renderBuild();}return;}
@@ -1018,7 +1133,12 @@
     if(e.target.closest('[data-apply-adapt]')){if(phase==='adapt'){adapted=true;setStep('results');}return;}
   });
   root.addEventListener('click',e=>{if(e.target.closest('button')&&!e.target.closest('[data-submit-report]')) setTimeout(queueRoomSync,0);});
-  root.querySelector('#basin-filter').addEventListener('change',renderCards);
+  root.querySelector('#basin-filter').addEventListener('change',e=>{
+    if(packageLocked||submittedAt) return;
+    sharedCategory=e.target.value;
+    renderCards();
+    queueRoomSync();
+  });
   root.addEventListener('input',e=>{
     if(!e.target.matches('[data-report]')) return;
     if(e.target.dataset.report==='participants') reportParticipants=e.target.value;
