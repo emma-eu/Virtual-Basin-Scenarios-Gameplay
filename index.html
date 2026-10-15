@@ -55,11 +55,36 @@
  #basin-gui .basin-main[data-stage="allocation"] .basin-score,#basin-gui .basin-main[data-stage="shock"] .basin-score,#basin-gui .basin-main[data-stage="adapt"] .basin-score,#basin-gui .basin-main[data-stage="results"] .basin-score {grid-column:auto;}
 }
 
+
+/* One-time, participant-facing scribe introduction. Does not change room permissions. */
+#basin-scribe-intro {position:fixed;inset:0;z-index:10000;background:rgba(12,37,45,.78);display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;}
+#basin-scribe-intro[hidden] {display:none!important;}
+#basin-scribe-intro .scribe-intro-card {width:min(100%,620px);max-height:calc(100vh - 40px);overflow:auto;background:#fffdf7;border-radius:20px;box-shadow:0 18px 65px rgba(0,0,0,.3);padding:clamp(24px,5vw,42px);text-align:center;box-sizing:border-box;color:#183c42;}
+#basin-scribe-intro .scribe-intro-kicker {font-size:12px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:#47745b;}
+#basin-scribe-intro h1 {margin:14px 0 17px;font-size:clamp(27px,4vw,38px);line-height:1.12;letter-spacing:-.025em;}
+#basin-scribe-intro .scribe-intro-emoji {font-size:34px;line-height:1.3;margin-top:14px;}
+#basin-scribe-intro p {margin:0 auto 13px;max-width:490px;font-size:16px;line-height:1.5;}
+#basin-scribe-intro .scribe-intro-emphasis {font-weight:800;}
+#basin-scribe-intro button {border:0;border-radius:12px;background:#216556;color:white;font-weight:800;font-size:17px;cursor:pointer;width:100%;max-width:340px;min-height:56px;margin-top:16px;padding:12px 20px;}
+#basin-scribe-intro button:focus-visible {outline:3px solid #f2c05b;outline-offset:4px;}
 </style>
 </head>
 <body>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<div id="basin-scribe-intro" role="dialog" aria-modal="true" aria-labelledby="scribe-intro-title" aria-describedby="scribe-intro-description">
+  <div class="scribe-intro-card">
+    <div class="scribe-intro-kicker">Before your group begins</div>
+    <div class="scribe-intro-emoji" aria-hidden="true">✍️</div>
+    <h1 id="scribe-intro-title">DISCUSS AMONG YOURSELVES:<br>WHO WILL BE THE SCRIBE?</h1>
+    <div id="scribe-intro-description">
+      <p>You'll all see the same live game board. <span class="scribe-intro-emphasis">Choose one person to operate it</span> while the whole group discusses and decides together.</p>
+      <p>It's easiest when only the scribe clicks: that keeps everyone's screen in sync and avoids accidental changes to strategies or water allocations.</p>
+      <p><strong>Everyone contributes ideas. One person enters the decisions.</strong></p>
+    </div>
+    <button type="button" id="basin-scribe-begin">We've chosen our scribe — Start the game →</button>
+  </div>
+</div>
 <div id="basin-gui" class="basin-preview">
   <div class="basin-app" aria-label="Basin Scenarios collaborative breakout-room game mockup">
     <header class="basin-topbar">
@@ -350,6 +375,19 @@
 <script>
 (() => {
   const root = document.getElementById('basin-gui');
+  const scribeIntro = document.getElementById('basin-scribe-intro');
+  const scribeBegin = document.getElementById('basin-scribe-begin');
+  // A browser-session acknowledgment: each player sees this on first opening the room.
+  // No shared Supabase edits or exclusive driver permissions are introduced.
+  const scribeIntroKey = 'basin-scribe-intro:' + window.location.pathname + ':' + window.location.search;
+  let introSeen = false;
+  try { introSeen = window.sessionStorage.getItem(scribeIntroKey) === 'yes'; } catch (_) {}
+  if (introSeen) scribeIntro.hidden = true;
+  else { scribeBegin.focus(); }
+  scribeBegin.addEventListener('click', () => {
+    scribeIntro.hidden = true;
+    try { window.sessionStorage.setItem(scribeIntroKey, 'yes'); } catch (_) {}
+  });
   const SUPABASE_URL = 'https://zyztobfvnbxommziwwmg.supabase.co';
   const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_y7bOOOECbMtulU_BOkrgSg_8NxaCrSi';
   const params = new URLSearchParams(window.location.search);
