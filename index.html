@@ -94,7 +94,7 @@
       </div>
       <div class="basin-session">
         <span class="basin-live" id="basin-live-status"><i data-lucide="radio" aria-hidden="true"></i> Connecting…</span>
-        <span class="basin-time"><i data-lucide="clock-3" aria-hidden="true"></i> Game time <b id="basin-timer">30:00</b></span>
+        <span class="basin-time"><i data-lucide="clock-3" aria-hidden="true"></i> Elapsed time <b id="basin-timer">0:00</b></span>
       </div>
     </header>
 
@@ -394,13 +394,12 @@
   const workshopSlug = params.get('workshop') || 'local-preview';
   const roomCode = params.get('room') || 'preview';
   const roomToken = params.get('token') || '';
-  const gameDurationSeconds = 30 * 60;
+  // Count upward from the room's shared start time (or page load in preview mode).
   let gameStartedAt = Date.now();
-  let timeRemaining = gameDurationSeconds;
   const renderTimer = () => {
-    timeRemaining = Math.max(0, gameDurationSeconds - Math.floor((Date.now() - gameStartedAt) / 1000));
-    const minutes = Math.floor(timeRemaining / 60);
-    const seconds = timeRemaining % 60;
+    const elapsedSeconds = Math.max(0, Math.floor((Date.now() - gameStartedAt) / 1000));
+    const minutes = Math.floor(elapsedSeconds / 60);
+    const seconds = elapsedSeconds % 60;
     root.querySelector('#basin-timer').textContent = `${minutes}:${String(seconds).padStart(2,'0')}`;
   };
   renderTimer();
@@ -933,6 +932,7 @@
       roomVersion=joined.version||0;
       submittedAt=joined.submitted_at||null;
       gameStartedAt=joined.started_at?new Date(joined.started_at).getTime():Date.now();
+      renderTimer();
       if(joined.state&&Object.keys(joined.state).length) applyGameState(joined.state);
       if(submittedAt) showCompletionScreen();
       syncReady=true;
