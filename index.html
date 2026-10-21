@@ -779,12 +779,12 @@
     const eco=baseEco+bonus, dust=baseDust+bonus;
     const badges=[
       ['Cost conscious',packageComplete&&cost<=16],
-      ['Supply resilient',packageComplete&&currentSupply>=6],
+      ['Supply resilient',packageComplete&&currentSupply>=5],
       ['Lake forward',packageComplete&&currentLake>=9],
       ['Ecosystem strong',packageComplete&&eco>=8],
-      ['Agriculture supportive',packageComplete&&ag>=3],
+      ['Agriculture supportive',packageComplete&&ag>=4],
       ['Clean air',packageComplete&&dust>=2],
-      ['Balanced strategy',packageComplete&&cost<=20&&currentSupply>=4&&currentLake>=10&&eco>=6&&ag>=0&&dust>=2]
+      ['Balanced strategy',packageComplete&&cost<=20&&currentSupply>=4&&currentLake>=7&&eco>=6&&ag>=0&&dust>=1]
     ];
     return {t,currentLake,currentSupply,cost,eco,ag,dust,bonus,badges,packageComplete};
   }
@@ -1021,12 +1021,12 @@
     };
     const badgeDetails=[
       {name:'Cost conscious',art:badgeArt.cost,value:`Cost ${s.cost}`,rule:'Earn at 16 or less'},
-      {name:'Supply resilient',icon:'shield-check',value:`Supply ${s.currentSupply}`,rule:'Earn at 6 or more'},
+      {name:'Supply resilient',icon:'shield-check',value:`Supply ${s.currentSupply}`,rule:'Earn at 5 or more'},
       {name:'Lake forward',art:badgeArt.lake,value:`Lake ${s.currentLake}`,rule:'Earn at 9 or more'},
       {name:'Ecosystem strong',art:badgeArt.ecosystem,value:`Ecosystem ${s.eco}`,rule:'Earn at 8 or more'},
-      {name:'Agriculture supportive',art:badgeArt.agriculture,value:`Agriculture ${s.ag}`,rule:'Earn at 3 or more'},
+      {name:'Agriculture supportive',art:badgeArt.agriculture,value:`Agriculture ${s.ag}`,rule:'Earn at 4 or more'},
       {name:'Clean air',art:badgeArt.air,value:`Dust ${s.dust}`,rule:'Earn at 2 or more'},
-      {name:'Balanced strategy',icon:'scale',value:`Now: C${s.cost} · S${s.currentSupply} · L${s.currentLake} · E${s.eco} · A${s.ag} · D${s.dust}`,rule:'Need: C≤20 · S≥4 · L≥10 · E≥6 · A≥0 · D≥2'}
+      {name:'Balanced strategy',icon:'scale',value:`Now: C${s.cost} · S${s.currentSupply} · L${s.currentLake} · E${s.eco} · A${s.ag} · D${s.dust}`,rule:'Need: C≤20 · S≥4 · L≥7 · E≥6 · A≥0 · D≥1'}
     ];
     root.querySelector('#basin-live-badges').innerHTML=badgeDetails.map(b=>{
       const earned=Boolean(earnedBadges[b.name]);
