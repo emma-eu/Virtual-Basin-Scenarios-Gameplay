@@ -949,6 +949,14 @@ html.basin-modal-open, body.basin-modal-open { overflow:hidden !important; overs
 @media (max-width:420px) {
   #basin-gui .basin-score .basin-metrics {grid-template-columns:repeat(2,minmax(0,1fr))!important;}
 }
+
+/* Consistent GSLBIP orange outline on every walkthrough Next / Let's play button. */
+#basin-tour .tour-next,
+#basin-tour .tour-next:hover,
+#basin-tour .tour-next:focus-visible {
+  border: 3px solid #eca625 !important;
+  box-sizing: border-box;
+}
 </style>
 
 <script>
