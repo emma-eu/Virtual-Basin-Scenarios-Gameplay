@@ -59,14 +59,225 @@
 /* One-time, participant-facing scribe introduction. Does not change room permissions. */
 #basin-scribe-intro {position:fixed;inset:0;z-index:10000;background:rgba(12,37,45,.78);display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;}
 #basin-scribe-intro[hidden] {display:none!important;}
-#basin-scribe-intro .scribe-intro-card {width:min(100%,620px);max-height:calc(100vh - 40px);overflow:auto;background:#fffdf7;border-radius:20px;box-shadow:0 18px 65px rgba(0,0,0,.3);padding:clamp(24px,5vw,42px);text-align:center;box-sizing:border-box;color:#183c42;}
+#basin-scribe-intro .scribe-intro-card {width:min(100%,850px);max-height:none;overflow:visible;background:#fffdf7;border-radius:20px;box-shadow:0 18px 65px rgba(0,0,0,.3);padding:clamp(24px,5vw,42px);text-align:center;box-sizing:border-box;color:#183c42;}
 #basin-scribe-intro .scribe-intro-kicker {font-size:12px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:#47745b;}
 #basin-scribe-intro h1 {margin:14px 0 17px;font-size:clamp(27px,4vw,38px);line-height:1.12;letter-spacing:-.025em;}
 #basin-scribe-intro .scribe-intro-emoji {font-size:34px;line-height:1.3;margin-top:14px;}
 #basin-scribe-intro p {margin:0 auto 13px;max-width:490px;font-size:16px;line-height:1.5;}
 #basin-scribe-intro .scribe-intro-emphasis {font-weight:800;}
+#basin-scribe-intro .scribe-screen-share {display:flex;align-items:center;justify-content:center;gap:10px;background:#164050;color:#fff;border:3px solid #eca625;border-radius:12px;padding:13px 12px;margin:0 auto 20px;max-width:500px;font-size:clamp(19px,3vw,26px);font-weight:900;line-height:1.18;letter-spacing:.02em;}
 #basin-scribe-intro button {border:0;border-radius:12px;background:#216556;color:white;font-weight:800;font-size:17px;cursor:pointer;width:100%;max-width:340px;min-height:56px;margin-top:16px;padding:12px 20px;}
 #basin-scribe-intro button:focus-visible {outline:3px solid #f2c05b;outline-offset:4px;}
+
+/* Compact colored/muted badge indicators, always shown next to the live score. */
+#basin-gui .basin-score-badge-heading{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:13px 0 7px;color:#fffdfa;font-size:13px}
+#basin-gui .basin-score-badge-heading small{color:#d6e6e7;font-size:11px}
+#basin-gui .basin-badge-strip{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+#basin-gui .basin-badge-strip .basin-live-badge{display:flex;flex-direction:column;justify-content:center;text-align:center;gap:4px;min-width:0;padding:8px 5px;background:#214957;color:#e8f3f4;border:1px solid #547581}
+#basin-gui .basin-badge-strip .basin-live-badge.is-earned{background:#f7fff8;color:#173b35;border-color:#50b779}
+#basin-gui .basin-badge-strip .basin-badge-icon{width:38px;height:38px;margin:auto;border:0;background:transparent}
+#basin-gui .basin-badge-strip .basin-badge-icon img{width:36px;height:36px;object-fit:contain}
+#basin-gui .basin-badge-strip .basin-live-badge:not(.is-earned) .basin-badge-icon{filter:grayscale(1);opacity:.42}
+#basin-gui .basin-badge-strip .basin-badge-copy{min-width:0}
+#basin-gui .basin-badge-strip .basin-badge-copy strong{display:block;font-size:11px;line-height:1.2}
+#basin-gui .basin-badge-strip .basin-badge-copy small{font-size:11px;display:block;margin-top:3px}
+#basin-gui .basin-badge-strip .basin-badge-status{font-size:12px;font-weight:800}
+#basin-gui .basin-lake-bonus-callout{margin-top:9px;padding:10px 12px;border:1px solid #6e96a0;border-radius:10px;display:grid;grid-template-columns:minmax(155px,.8fr) minmax(0,3fr) minmax(175px,1.1fr);align-items:center;gap:10px;color:#fff}
+#basin-gui .basin-lake-bonus-callout small{display:block;color:#d6ebee;font-size:11px;margin-top:3px;line-height:1.4}
+#basin-gui .basin-lake-bonus-callout .basin-bonus-list{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
+#basin-gui .basin-lake-bonus-callout .basin-bonus-list>div{display:flex;flex-direction:column;gap:3px;background:#244d5b;color:#e5f4f5;border:1px solid #5d8290;font-size:11px;text-align:center;padding:7px 4px}
+#basin-gui .basin-lake-bonus-callout .basin-bonus-list>div.is-current{background:#f4c97b;color:#263a3b;border-color:#fff}
+#basin-gui .basin-active-lake-effect{font-size:12px;font-weight:750;line-height:1.4;padding:8px;border-radius:6px;background:#305763}
+#basin-gui .basin-active-lake-effect.is-positive{background:#246346}
+#basin-gui .basin-active-lake-effect.is-negative{background:#7c4a35}
+#basin-gui .basin-steps-disclosure{border-bottom:2px solid var(--b-navy);background:var(--b-board)}
+#basin-gui .basin-steps-disclosure>summary{cursor:pointer;display:flex;gap:12px;align-items:center;padding:9px 18px;font-size:13px;color:var(--b-text)}
+#basin-gui .basin-steps-disclosure>summary span{font-size:11px;color:var(--b-muted)}
+#basin-gui .basin-steps-disclosure .basin-steps{border-bottom:0}
+@media(max-width:1050px){#basin-gui .basin-badge-strip{grid-template-columns:repeat(4,minmax(0,1fr))}#basin-gui .basin-lake-bonus-callout{grid-template-columns:1fr}}
+@media(max-width:540px){#basin-gui .basin-badge-strip{grid-template-columns:repeat(2,minmax(0,1fr))}#basin-gui .basin-lake-bonus-callout .basin-bonus-list{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+
+#basin-gui .basin-score{display:block!important;}
+#basin-gui .basin-score .basin-score-content{display:grid;}
+#basin-gui .basin-score .basin-score-content[hidden]{display:none!important;}
+/* Collapsible top scoreboard: starts closed, can be reopened at any point. */
+#basin-gui .basin-score {align-self:start;}
+#basin-gui .basin-score-toggle-head {display:flex;align-items:center;justify-content:space-between;gap:12px;}
+#basin-gui .basin-score-toggle {cursor:pointer;border:1px solid #acc4c7;border-radius:8px;background:#f8faf6;color:#15454b;font-weight:800;font-size:13px;min-height:38px;padding:7px 12px;white-space:nowrap;}
+#basin-gui .basin-score-content[hidden]{display:none!important;}
+#basin-gui .basin-score-content{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:12px;align-items:start;}
+/* Use tighter rows in lake effects to eliminate empty vertical space. */
+#basin-gui .basin-score .basin-lake-bonus-callout{justify-content:flex-start;align-self:start;gap:7px;}
+#basin-gui .basin-score .basin-lake-bonus-callout .basin-bonus-list>div{padding:6px 4px;}
+#basin-gui .basin-score .basin-lake-bonus-callout .basin-active-lake-effect{padding:6px 8px;min-height:0;}
+/* Earlier grid placements now apply to score-content rather than score. */
+#basin-gui .basin-score-content>.basin-metrics{grid-column:1;grid-row:1;}
+#basin-gui .basin-score-content>.basin-guardrail{grid-column:1;grid-row:2;}
+#basin-gui .basin-score-content>.basin-score-badge-heading{grid-column:1;grid-row:3;}
+#basin-gui .basin-score-content>.basin-live-badges{grid-column:1;grid-row:4;}
+#basin-gui .basin-score-content>.basin-lake-bonus-callout{grid-column:2;grid-row:1 / 5;}
+#basin-climate-warning{position:fixed;inset:0;z-index:11000;background:rgba(13,36,43,.78);display:flex;justify-content:center;align-items:center;padding:18px;box-sizing:border-box;}
+#basin-climate-warning[hidden]{display:none!important;}
+#basin-climate-warning .basin-climate-warning-card{width:min(100%,800px);max-height:none;overflow:visible;box-sizing:border-box;background:#fffdf6;color:#143f43;border-radius:18px;padding:clamp(22px,4vw,38px);box-shadow:0 20px 60px rgba(0,0,0,.3);text-align:center;}
+#basin-climate-warning .basin-climate-warning-symbol{font-size:34px;margin-bottom:10px;}
+#basin-climate-warning h2{font-size:clamp(24px,3vw,33px);line-height:1.13;margin:10px 0 14px;}
+#basin-climate-warning p{font-size:15px;line-height:1.5;margin:12px 0;}
+#basin-climate-warning .basin-climate-continue{border:0;border-radius:11px;background:#216556;color:#fff;font-size:16px;font-weight:800;padding:15px 20px;cursor:pointer;margin-top:12px;min-height:52px;width:100%;}
+@media(max-width:720px){#basin-gui .basin-score-content{grid-template-columns:1fr}#basin-gui .basin-score-content>.basin-lake-bonus-callout{grid-column:1;grid-row:5}}
+
+/* Always-on compact scoreboard, contiguous scores and badges, narrow lake panel. */
+#basin-gui .basin-score{padding:7px 10px!important;}
+#basin-gui .basin-score .basin-panelhead{margin:0 0 4px!important;padding:0!important;}
+#basin-gui .basin-score-content{display:grid!important;grid-template-columns:minmax(0,3.6fr) minmax(235px,1fr)!important;gap:0 8px!important;align-items:start;}
+#basin-gui .basin-score-content>.basin-metrics{grid-column:1;grid-row:1;min-width:0;}
+#basin-gui .basin-score-content>.basin-live-badges{grid-column:1;grid-row:2;min-width:0;margin:0!important;padding:0!important;}
+#basin-gui .basin-score-content>.basin-score-badge-heading{display:none!important;}
+#basin-gui .basin-score-content>.basin-guardrail{grid-column:1;grid-row:3;margin:2px 0 0!important;padding:2px 5px!important;}
+#basin-gui .basin-score-content>.basin-lake-bonus-callout{grid-column:2;grid-row:1 / 4;margin:0!important;padding:5px 7px!important;align-self:stretch!important;}
+#basin-gui .basin-score .basin-metrics{grid-template-columns:repeat(6,minmax(0,1fr))!important;gap:2px!important;}
+#basin-gui .basin-score .basin-badge-strip{grid-template-columns:repeat(7,minmax(0,1fr))!important;gap:2px!important;}
+#basin-gui .basin-score .basin-badge-strip .basin-live-badge:not(.is-earned){background:#777b80!important;border-color:#777b80!important;color:#fff!important;box-shadow:none!important;}
+#basin-gui .basin-score .basin-badge-strip .basin-live-badge:not(.is-earned) .basin-badge-icon{filter:grayscale(1)!important;opacity:.6!important;}
+#basin-gui .basin-score .basin-badge-strip .basin-live-badge:not(.is-earned) .basin-badge-copy,#basin-gui .basin-score .basin-badge-strip .basin-live-badge:not(.is-earned) .basin-badge-status{color:#fff!important;}
+#basin-gui .basin-score .basin-badge-strip .basin-live-badge{padding:2px!important;}
+@media(max-width:900px){#basin-gui .basin-score-content{grid-template-columns:minmax(0,1fr)!important;gap:5px!important;}#basin-gui .basin-score-content>.basin-lake-bonus-callout{grid-column:1;grid-row:4;} }
+@media(max-width:600px){#basin-gui .basin-score .basin-metrics{grid-template-columns:repeat(3,minmax(0,1fr))!important;}#basin-gui .basin-score .basin-badge-strip{grid-template-columns:repeat(4,minmax(0,1fr))!important;}}
+
+/* Permanent low-profile step tabs; no surrounding disclosure or blue box. */
+#basin-gui .basin-top-tabs{display:flex!important;align-items:stretch;gap:0!important;background:transparent!important;border:0!important;border-bottom:1px solid #bcc9c7!important;border-radius:0!important;padding:0 8px!important;margin:0!important;min-height:0!important;overflow-x:auto;scrollbar-width:thin;box-shadow:none!important;}
+#basin-gui .basin-top-tabs button{flex:1 1 0;min-width:max-content;min-height:34px!important;height:auto!important;border:0!important;border-radius:0!important;border-bottom:3px solid transparent!important;background:transparent!important;box-shadow:none!important;margin:0!important;padding:6px 12px!important;font-size:12px!important;line-height:1.2!important;font-weight:650!important;white-space:nowrap;}
+#basin-gui .basin-top-tabs button.is-active{border-bottom-color:#216556!important;color:#145342!important;background:#edf3ee!important;}
+#basin-gui .basin-top-tabs button span{width:19px!important;height:19px!important;margin-right:5px!important;font-size:10px!important;}
+/* Compact scores: use width instead of height, remove whitespace between badges and scores. */
+#basin-gui .basin-score{padding:4px 9px!important;margin:0!important;}
+#basin-gui .basin-score .basin-panelhead{margin:0 0 2px!important;min-height:0!important;}
+#basin-gui .basin-score .basin-panelhead h2{font-size:14px!important;line-height:1.1!important;margin:0!important;}
+#basin-gui .basin-score .basin-panelhead p{display:none!important;}
+#basin-gui .basin-score-content{grid-template-columns:minmax(0,4.8fr) minmax(210px,1fr)!important;gap:0 5px!important;}
+#basin-gui .basin-score .basin-metrics{gap:1px!important;margin:0!important;}
+#basin-gui .basin-score .basin-metric{padding:3px 2px!important;min-height:0!important;gap:0!important;}
+#basin-gui .basin-score .basin-metric span{font-size:9px!important;line-height:1.05!important;}
+#basin-gui .basin-score .basin-metric strong{font-size:16px!important;line-height:1.02!important;}
+#basin-gui .basin-score .basin-badge-strip{gap:1px!important;margin:0!important;padding:0!important;}
+#basin-gui .basin-score .basin-badge-strip .basin-live-badge{gap:0!important;padding:1px!important;min-height:0!important;}
+#basin-gui .basin-score .basin-badge-strip .basin-badge-icon{width:24px!important;height:24px!important;}
+#basin-gui .basin-score .basin-badge-strip .basin-badge-icon img{max-height:24px!important;max-width:24px!important;}
+#basin-gui .basin-score .basin-badge-strip .basin-badge-copy{font-size:9px!important;line-height:1.02!important;}
+#basin-gui .basin-score .basin-badge-strip .basin-badge-status{font-size:9px!important;line-height:1.05!important;}
+#basin-gui .basin-score-content>.basin-guardrail{margin:0!important;padding:1px 4px!important;min-height:0!important;font-size:10px!important;}
+#basin-gui .basin-score .basin-lake-bonus-callout{padding:3px 5px!important;gap:3px!important;}
+#basin-gui .basin-score .basin-lake-bonus-callout .basin-bonus-list>div{padding:2px 3px!important;}
+#basin-gui .basin-score .basin-lake-bonus-callout .basin-active-lake-effect{padding:3px 5px!important;}
+@media(max-width:900px){#basin-gui .basin-score-content{grid-template-columns:1fr!important;gap:3px!important;}#basin-gui .basin-score-content>.basin-lake-bonus-callout{grid-column:1;grid-row:4;}}
+@media(max-width:600px){#basin-gui .basin-top-tabs button{font-size:11px!important;padding:6px 9px!important;}#basin-gui .basin-score .basin-badge-strip{grid-template-columns:repeat(4,minmax(0,1fr))!important;}}
+
+
+/* Unified instruction cards for Steps 2–5, matching the clean Step 1 treatment. */
+#basin-gui .basin-step-tips{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:9px 0 8px;}
+#basin-gui .basin-step-tips>span{display:flex;align-items:flex-start;gap:9px;padding:9px 10px;background:var(--b-board);border:1px solid var(--b-line);border-radius:8px;font-size:12px;line-height:1.4;}
+#basin-gui .basin-step-tips>span>b{flex:none;width:21px;height:21px;border-radius:50%;display:grid;place-items:center;background:#216556;color:white;font-size:11px;}
+#basin-gui .basin-step-tips .basin-tip-copy{display:block;min-width:0;flex:1;background:transparent;border:0;border-radius:0;padding:0;font-size:inherit;line-height:inherit;}
+#basin-gui .basin-live-badge.is-earned{border:3px solid #39ef67 !important;box-shadow:0 0 0 1px #125b2a,inset 0 0 0 1px #125b2a;position:relative;}
+#basin-gui .basin-live-badge.is-earned::after{content:'✓';position:absolute;top:2px;right:4px;background:#12652e;color:#fff;font-size:11px;font-weight:900;line-height:1;border-radius:50%;padding:3px 4px;}
+@media(max-width:750px){#basin-gui .basin-step-tips{grid-template-columns:1fr;}}
+
+/* Ninth strategy uses Step 1-style category browsing instead of a nested scroll list. */
+#basin-gui .basin-main[data-stage="adapt"] .basin-adapt-list {max-height:none;overflow:visible;border:0;padding:0;margin:8px 0 12px;}
+#basin-gui .basin-adapt-filter-label {display:flex;align-items:center;gap:12px;font-size:13px;font-weight:800;margin:12px 0 8px;}
+#basin-gui .basin-adapt-filter-label select {min-width:190px;max-width:100%;padding:9px 28px 9px 11px;border:1px solid var(--b-line);border-radius:8px;background:var(--b-app);color:var(--b-text);font:inherit;}
+#basin-gui .basin-adapt-current {background:#e3f9e9;border-left:4px solid #17843d;padding:9px 11px;border-radius:6px;color:#123e28;font-size:12px;line-height:1.4;}
+#basin-gui .basin-adapt-current span {font-weight:700;}
+@media(max-width:590px){#basin-gui .basin-adapt-filter-label {align-items:stretch;flex-direction:column;gap:4px;}#basin-gui .basin-adapt-filter-label select{width:100%;}}
+
+/* Adapt screen mirrors Step 1: menu left, selection and controls right. */
+#basin-gui .basin-main[data-stage="adapt"] .basin-phase{width:100%;}
+#basin-gui .basin-adapt-workspace{display:grid;grid-template-columns:minmax(380px,1.18fr) minmax(290px,1fr);gap:0;align-items:start;width:100%;}
+#basin-gui .basin-adapt-sidebar,#basin-gui .basin-adapt-menu{min-width:0;padding:16px 18px;box-sizing:border-box;}
+#basin-gui .basin-adapt-sidebar{order:2;background:var(--b-board);border:1px solid var(--b-line);border-left:0;border-radius:0 10px 10px 0;}
+#basin-gui .basin-adapt-menu{order:1;background:var(--b-app);border:1px solid var(--b-line);border-radius:10px 0 0 10px;}
+#basin-gui .basin-adapt-workspace h2{margin:0 0 7px;font-size:20px;}
+#basin-gui .basin-adapt-sidebar>p{font-size:13px;margin:0 0 12px;line-height:1.45;}
+#basin-gui .basin-adapt-menu .basin-panelhead{margin-bottom:10px;}
+#basin-gui .basin-adapt-menu .basin-panelhead p{font-size:12px;margin:3px 0 0;}
+#basin-gui .basin-adapt-menu .basin-adapt-list{margin-top:10px;}
+#basin-gui .basin-adapt-sidebar .basin-adapt-current{margin:12px 0;}
+#basin-gui .basin-adapt-current>div{font-weight:700;margin:4px 0;}
+#basin-gui .basin-adapt-water-title{font-size:13px;font-weight:800;margin:15px 0 7px;}
+#basin-gui .basin-adapt-sidebar .basin-trays{margin:0 0 14px;}
+#basin-gui .basin-adapt-sidebar .basin-adapt-actions{display:grid;grid-template-columns:1fr;gap:8px;margin-top:16px;}
+#basin-gui .basin-adapt-sidebar .basin-adapt-actions button{width:100%;}
+#basin-gui .basin-return-allocation{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-top:12px;padding:10px 14px;border:1px solid #7ba48c;background:#eaf7ee;border-radius:9px;color:#184a30;font-size:13px;font-weight:650;}
+#basin-gui .basin-return-allocation button{width:auto;min-height:38px;padding:9px 15px;}
+@media(max-width:780px){#basin-gui .basin-adapt-workspace{grid-template-columns:1fr;}#basin-gui .basin-adapt-menu{border-radius:10px 10px 0 0;}#basin-gui .basin-adapt-sidebar{border-left:1px solid var(--b-line);border-top:0;border-radius:0 0 10px 10px;}}
+
+/* Friendly, decision-first guidance across all five stages */
+#basin-gui .basin-playful-guide{display:grid;gap:8px;max-width:1100px}
+#basin-gui .basin-playful-guide p{margin:0}
+#basin-gui .basin-playful-challenge{font-size:clamp(14px,1.5vw,17px);font-weight:750;color:#164050;line-height:1.4}
+#basin-gui .basin-playful-tiles{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#basin-gui .basin-playful-tiles>div{border-radius:10px;padding:10px 13px;min-width:0;border:1px solid #bdd6d8}
+#basin-gui .basin-playful-discuss{background:#eaf6f6}
+#basin-gui .basin-playful-action{background:#fff3da;border-color:#e4c486!important}
+#basin-gui .basin-playful-tag{display:block;font-size:10px;font-weight:850;letter-spacing:.08em;color:#164050;margin-bottom:4px}
+#basin-gui .basin-playful-tiles p{font-size:13px;line-height:1.43;color:#183d4c}
+#basin-gui .basin-playful-note{font-size:12px;line-height:1.45;color:#164050;background:#f4f7f2;border-left:3px solid #eca625;padding:6px 10px;border-radius:3px}
+#basin-gui .basin-playful-guide .basin-guide-details{margin:0;font-size:12px}
+@media(max-width:680px){#basin-gui .basin-playful-tiles{grid-template-columns:1fr}#basin-gui .basin-playful-tiles>div{padding:8px 11px}}
+
+
+/* Freeze the document during the scribe, climate, and guided-tour overlays.
+   Programmatic scrollIntoView for each spotlight still works. */
+html.basin-modal-open, body.basin-modal-open { overflow:hidden !important; overscroll-behavior:none; }
+
+/* Guided spotlight tour: required once per stage in each browser session. */
+#basin-tour[hidden]{display:none!important}
+#basin-tour{position:fixed;inset:0;z-index:12000;pointer-events:auto}
+#basin-tour .tour-shade{position:absolute;inset:0;background:rgba(7,26,35,.67)}
+#basin-tour .tour-spotlight{position:fixed;border:3px solid #eca625;border-radius:13px;box-shadow:0 0 0 9999px rgba(7,26,35,.66),0 0 0 6px rgba(255,255,255,.50);pointer-events:none;transition:top .2s,left .2s,width .2s,height .2s}
+#basin-tour .tour-tip{position:fixed;box-sizing:border-box;width:min(640px,calc(100vw - 24px));background:#fffefa;color:#164050;border:2px solid #eca625;border-radius:15px;padding:17px 18px;box-shadow:0 16px 40px rgba(0,0,0,.35);max-height:none;overflow:visible}
+#basin-tour .tour-tip::before{content:'';position:absolute;top:-11px;left:30px;width:17px;height:17px;background:#fffefa;border-top:2px solid #eca625;border-left:2px solid #eca625;transform:rotate(45deg)}
+#basin-tour .tour-tip.is-above::before{top:auto;bottom:-11px;transform:rotate(225deg)}
+#basin-tour .tour-step{font-size:12px;font-weight:800;letter-spacing:.05em;color:#426578;text-transform:uppercase}
+#basin-tour h2{font-size:21px;line-height:1.2;margin:8px 0 7px;color:#164050}
+#basin-tour p{font-size:15px;line-height:1.45;margin:0 0 14px;color:#234a56}
+#basin-tour .tour-emphasis{display:block;margin-top:11px;font-weight:800;color:#164050}
+#basin-tour .tour-actions{display:flex;align-items:center;gap:8px;justify-content:flex-end}
+#basin-tour button{border-radius:9px;min-height:40px;padding:8px 13px;font-size:14px;font-weight:750;cursor:pointer}
+#basin-tour .tour-next{color:#fff;background:#164050;border:2px solid #164050}
+#basin-tour button:focus-visible{outline:3px solid #eca625;outline-offset:3px}
+/* Tour and opening overlays: fit all copy without an internal scrollbar. */
+@media(max-height:750px){
+ #basin-scribe-intro .scribe-intro-card{padding:18px 28px}
+ #basin-scribe-intro h1{font-size:clamp(21px,3vw,30px);margin:7px 0 9px}
+ #basin-scribe-intro .scribe-intro-emoji{font-size:24px;margin-top:5px}
+ #basin-scribe-intro p{font-size:14px;line-height:1.32;margin-bottom:7px;max-width:720px}
+ #basin-scribe-intro button{min-height:42px;margin-top:8px;padding:8px 14px}
+ #basin-climate-warning .basin-climate-warning-card{padding:18px 26px}
+ #basin-tour .tour-tip{padding:11px 15px}
+ #basin-tour h2{font-size:18px;margin:5px 0}
+ #basin-tour p{font-size:13px;line-height:1.3;margin-bottom:8px}
+ #basin-tour .tour-emphasis{margin-top:6px}
+}
+@media(max-height:520px){
+ #basin-scribe-intro .scribe-intro-card{padding:10px 16px}
+ #basin-scribe-intro h1{font-size:19px;margin:4px 0}
+ #basin-scribe-intro .scribe-intro-emoji{font-size:19px;margin:0}
+ #basin-scribe-intro p{font-size:12px;line-height:1.18;margin-bottom:4px}
+ #basin-scribe-intro button{min-height:34px;font-size:13px;margin-top:4px;padding:5px}
+ #basin-climate-warning .basin-climate-warning-card{padding:10px 16px}
+ #basin-tour .tour-tip{padding:8px 12px}
+ #basin-tour h2{font-size:16px;margin:3px 0}
+ #basin-tour p{font-size:12px;line-height:1.2;margin-bottom:5px}
+ #basin-tour .tour-step{font-size:10px}
+ #basin-tour button{min-height:30px;padding:5px 10px;font-size:12px}
+}
+@media(max-width:600px){
+ #basin-scribe-intro{padding:8px}
+ #basin-scribe-intro .scribe-intro-card{padding:clamp(10px,3vw,22px)}
+ #basin-climate-warning .basin-climate-warning-card{padding:clamp(10px,3vw,22px)}
+}
+@media(prefers-reduced-motion:reduce){#basin-tour .tour-spotlight{transition:none}}
 </style>
 </head>
 <body>
@@ -76,14 +287,26 @@
   <div class="scribe-intro-card">
     <div class="scribe-intro-kicker">Before your group begins</div>
     <div class="scribe-intro-emoji" aria-hidden="true">✍️</div>
-    <h1 id="scribe-intro-title">Starting Instructions<br>
-      Scribe: Please share with the group.</h1>
+    <h1 id="scribe-intro-title">Starting Instructions<br>Scribe: Please share with the group.</h1>
+    <div class="scribe-screen-share" role="note">
+      <span aria-hidden="true">🖥️</span> SCRIBE: SHARE YOUR SCREEN
+    </div>
     <div id="scribe-intro-description">
-      <p>The Scribe will be the only person who operates the live game board, and will share screen with other participants. Anyone else who clicks the shared link will all see the same live game board; <span class="scribe-intro-emphasis">please do not click anything on the board if you are not the Scribe! </span>Other participants can review the Strategies Menu document to learn about all available strategies.</p>
+      <p>The Scribe will be the only person who operates the live game board and will share their screen with other participants. Anyone else who clicks the shared link will see the same live game board; <span class="scribe-intro-emphasis">please do not click anything on the board if you are not the Scribe!</span> Other participants can review the Strategies Menu document to learn about all available strategies.</p>
       <p>Everyone contributes ideas. One person enters the decisions.</p>
-      <strong><p>All participants: take the first 5 minutes of gameplay to review the Strategies Menu document.</strong></p>
+      <p><strong>All participants: take the first 5 minutes of gameplay to review the Strategies Menu document.</strong></p>
     </div>
     <button type="button" id="basin-scribe-begin">Start the game →</button>
+  </div>
+</div>
+<div id="basin-climate-warning" class="basin-climate-warning" role="dialog" aria-modal="true" aria-labelledby="basin-climate-warning-title" aria-describedby="basin-climate-warning-copy" hidden>
+  <div class="basin-climate-warning-card">
+    <div class="basin-climate-warning-symbol" aria-hidden="true">⚠</div>
+    <span class="basin-stage-kicker">BEFORE STEP 2 · WATER ALLOCATION</span>
+    <h2 id="basin-climate-warning-title">Choose your water allocation wisely</h2>
+    <p id="basin-climate-warning-copy">In the next step, you'll draw a possible <strong>future climate</strong>. Dry conditions could remove several water points from <strong>both Great Salt Lake and Basin Supply</strong>.</p>
+    <p>Keep in mind: <strong>Basin Supply must have at least 4 points</strong> after the water future to meet basin needs. Extra Supply points provide a buffer, while Lake points can improve ecosystem health and reduce dust.</p>
+    <button type="button" id="basin-climate-continue" class="basin-climate-continue">I understand — Allocate water →</button>
   </div>
 </div>
 <div id="basin-gui" class="basin-preview">
@@ -99,17 +322,41 @@
       </div>
     </header>
 
-    <nav class="basin-steps" aria-label="Game phases">
+    <div hidden aria-hidden="true"><span id="basin-badge-count"></span><div id="basin-badge-progress"></div></div>
+    <nav class="basin-steps basin-top-tabs" aria-label="Game phases">
       <button type="button" class="is-active" data-step="build"><span>1</span> Play strategy cards</button>
       <button type="button" data-step="shock"><span>2</span> Draw water future</button>
       <button type="button" data-step="adapt"><span>3</span> Optional strategy</button>
       <button type="button" data-step="results"><span>4</span> Final score &amp; report</button>
     </nav>
 
-    <main id="basin-main" class="basin-main">
+      <aside class="basin-score" aria-labelledby="score-title">
+        <div class="basin-panelhead basin-score-toggle-head"><div><h2 id="score-title">Live Score</h2><p>Updates with each group decision.</p></div></div>
+        <div id="basin-score-content" class="basin-score-content">
+        <div class="basin-metrics" id="basin-metrics"></div>
+        
+        <div class="basin-lake-bonus-callout" aria-live="polite">
+          <div><strong>Lake level effects</strong><small>Lake water changes Ecosystem and Dust scores when all 8 strategies are chosen.</small></div>
+          <div class="basin-bonus-list" id="basin-bonus-list">
+            <div data-bonus="low"><span>0–5 Lake</span><strong>−2 Eco · −2 Dust</strong></div>
+            <div data-bonus="neutral"><span>6–9 Lake</span><strong>No adjustment</strong></div>
+            <div data-bonus="plus-two"><span>10–13 Lake</span><strong>+2 Eco · +2 Dust</strong></div>
+            <div data-bonus="plus-three"><span>14+ Lake</span><strong>+3 Eco · +3 Dust</strong></div>
+          </div>
+          <div id="basin-active-lake-effect" class="basin-active-lake-effect">Choose eight strategies to activate the lake adjustment.</div>
+        </div>
+        <div class="basin-score-badge-heading"><strong>Badges</strong><small>Color = target met · Gray = not yet</small></div>
+        <div id="basin-live-badges" class="basin-live-badges basin-badge-strip"></div>
+        </div>
+      </aside>
+    <section class="basin-instruction" aria-live="polite" aria-atomic="true">
+      <span id="basin-stage-number" class="basin-instruction-step">STEP 1 OF 5</span>
+      <div class="basin-guide-content"><h2 id="basin-stage-title">Build your strategy package</h2><div id="basin-stage-help" class="basin-guide-instructions">Review the strategy menu together. The scribe selects the group’s eight strategies.</div></div>
+    </section>
+<main id="basin-main" class="basin-main">
       <section class="basin-library" aria-labelledby="library-title">
         <div class="basin-panelhead">
-          <div><h2 id="library-title">Strategy library</h2><p>Choose 8 strategies together to build a water management package. To get things rolling, your group can choose to have each member select ONE strategy to include, no discussion, and then collaboratively choose the rest! Or choose all 8 collaboratively.</p></div>
+          <div><h2 id="library-title">Strategy menu</h2><p>Browse categories and compare trade-offs. Discuss each choice before the scribe adds it.</p></div>
           <label>Category
             <select id="basin-filter">
               <option value="Agriculture">Agriculture</option>
@@ -126,15 +373,16 @@
 
       <section class="basin-package" aria-labelledby="package-title">
         <div class="basin-panelhead">
-          <div><h2 id="package-title">Our basin package</h2><p id="basin-package-status">0 of 8 cards selected</p></div>
+          <div><h2 id="package-title">Your selected strategies</h2><p id="basin-package-status">0 of 8 cards selected</p></div>
           <div class="basin-room-note" id="basin-room-note">Changes save for everyone using this room link.</div>
         </div>
         <div id="basin-slots" class="basin-slots"></div>
-        <div class="basin-allocation-intro" id="basin-allocation-intro"><span class="basin-stage-kicker">STEP 1 COMPLETE · 8 STRATEGIES SELECTED</span><h2>Allocate your water</h2><p>Decide together how to share the water benefit between the Great Salt Lake and Basin Supply. When ready, confirm your allocation to draw your water future.</p><button type="button" class="basin-outline" data-edit-package><span aria-hidden="true">←</span> Edit selected strategies</button></div>
+        <div id="basin-return-allocation" class="basin-return-allocation" hidden><span>Your original 8 strategies are still selected. No changes needed?</span><button type="button" class="basin-primary" data-return-allocation>Continue to water allocation →</button></div>
+        <div class="basin-allocation-intro" id="basin-allocation-intro"><span class="basin-stage-kicker">STEP 2 · 8 STRATEGIES SELECTED</span><h2>Decide where the water goes</h2><p>Use the + and − buttons below to split your water benefit between <strong>Basin Supply</strong> and <strong>Great Salt Lake</strong>. The first 4 Basin Supply points meet existing needs; any additional points improve resilience to dry conditions. Lake points may improve ecosystem and dust scores later. Discuss the trade-off, then confirm.</p><button type="button" class="basin-outline" data-edit-package><span aria-hidden="true">←</span> Edit selected strategies</button></div>
 
         <div class="basin-allocation">
           <div class="basin-allocation-head">
-            <div><h3>Allocate water benefit</h3><p id="basin-allocation-status">The first 4 points are preallocated to Basin Supply. Move any points as the group negotiates.</p></div>
+            <div><h3>Allocate water benefit</h3><p id="basin-allocation-status">The first 4 available water points are initially assigned to Basin Supply. Your group can change the split, but ending with fewer than 4 Basin Supply points means basin needs are not met.</p></div>
             <strong><span id="basin-water-total">0</span> current water</strong>
           </div>
           <div class="basin-trays">
@@ -156,24 +404,7 @@
         <section id="basin-phase" class="basin-phase" hidden aria-live="polite"></section>
       </section>
 
-      <aside class="basin-score" aria-labelledby="score-title">
-        <div class="basin-panelhead"><div><h2 id="score-title">Live score</h2><p>Water, bonuses, and badges update as the group plays.</p></div></div>
-        <div class="basin-metrics" id="basin-metrics"></div>
-        <div class="basin-guardrail" id="basin-guardrail"><i data-lucide="shield-check" aria-hidden="true"></i><div><strong>Basin needs currently met</strong><small>Supply must remain at 4 or more.</small></div></div>
-        <section class="basin-scorebox" aria-labelledby="bonus-title">
-          <h3 id="bonus-title">Lake bonuses</h3>
-          <div class="basin-bonus-list" id="basin-bonus-list">
-            <div data-bonus="low"><span>0–5 Lake</span><strong>−2 Eco · −2 Dust</strong></div>
-            <div data-bonus="neutral"><span>6–9 Lake</span><strong>No adjustment</strong></div>
-            <div data-bonus="plus-two"><span>10–13 Lake</span><strong>+2 Eco · +2 Dust</strong></div>
-            <div data-bonus="plus-three"><span>14+ Lake</span><strong>+3 Eco · +3 Dust</strong></div>
-          </div>
-        </section>
-        <section class="basin-scorebox" aria-labelledby="badge-title">
-          <h3 id="badge-title">Badge box</h3>
-          <div id="basin-live-badges" class="basin-live-badges"></div>
-        </section>
-      </aside>
+
     </main>
 
   </div>
@@ -371,6 +602,285 @@
     #basin-gui { color-scheme:light; print-color-adjust:exact; -webkit-print-color-adjust:exact; }
     .basin-app { box-shadow:none; }
   }
+
+/* Version 2: live scores above the exercise; water allocation only in Step 2. */
+#basin-gui .basin-score {background:#123e4f;color:#fffdfa;padding:13px 18px;border:0;min-width:0;}
+#basin-gui .basin-score .basin-panelhead {min-height:0;margin:0 0 9px;}
+#basin-gui .basin-score .basin-panelhead h2 {margin:0;font-size:19px;color:#fffdfa;}
+#basin-gui .basin-score .basin-panelhead p {margin:2px 0 0;font-size:12px;color:#d9edf0;}
+#basin-gui .basin-score .basin-metrics {display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:7px;}
+#basin-gui .basin-score .basin-metric {display:flex;align-items:center;justify-content:space-between;gap:5px;min-width:0;padding:9px 10px;background:#234e5d;border:1px solid #54808b;border-radius:9px;color:#fffdfa;}
+#basin-gui .basin-score .basin-metric span {color:#e4f1f2;font-size:12px;line-height:1.25;}
+#basin-gui .basin-score .basin-metric strong {color:#fffdfa;font-size:21px;}
+#basin-gui .basin-score .basin-guardrail {margin:9px 0 0;padding:7px 10px;min-height:0;}
+#basin-gui .basin-score .basin-guardrail small {font-size:11px;}
+#basin-gui .basin-top-details {display:inline-block;vertical-align:top;width:auto;min-width:155px;margin:7px 9px 0 0;padding:0;border:0;background:transparent;box-shadow:none;color:#fffdfa;}
+#basin-gui .basin-top-details summary {cursor:pointer;font-size:12px;font-weight:750;text-decoration:underline;text-underline-offset:3px;}
+#basin-gui .basin-top-details > section {position:relative;margin-top:10px;padding:12px;background:#123e4f;border:1px solid #8aadb5;border-radius:10px;max-height:310px;overflow:auto;}
+#basin-gui .basin-main[data-stage="build"] {grid-template-columns:minmax(290px,1fr) minmax(380px,1.18fr);}
+#basin-gui .basin-main[data-stage="build"] .basin-allocation,
+#basin-gui .basin-main[data-stage="build"] .basin-allocation-intro {display:none!important;}
+#basin-gui .basin-main[data-stage="allocation"],
+#basin-gui .basin-main[data-stage="shock"],
+#basin-gui .basin-main[data-stage="adapt"],
+#basin-gui .basin-main[data-stage="results"] {grid-template-columns:minmax(0,1fr);}
+#basin-gui .basin-main[data-stage="allocation"] .basin-package,
+#basin-gui .basin-main[data-stage="shock"] .basin-package,
+#basin-gui .basin-main[data-stage="adapt"] .basin-package,
+#basin-gui .basin-main[data-stage="results"] .basin-package {width:100%;box-sizing:border-box;}
+@media(max-width:850px){
+ #basin-gui .basin-score .basin-metrics{grid-template-columns:repeat(3,minmax(0,1fr));}
+ #basin-gui .basin-main[data-stage="build"] {display:flex;flex-direction:column;}
+}
+@media(max-width:480px){#basin-gui .basin-score .basin-metrics{grid-template-columns:repeat(2,minmax(0,1fr));}}
+
+/* Self-guided instructions for every game stage. */
+#basin-gui .basin-instruction {align-items:flex-start;gap:14px;}
+#basin-gui .basin-guide-content {flex:1;min-width:0;max-width:1100px;}
+#basin-gui .basin-guide-instructions {font-size:14px;line-height:1.52;}
+#basin-gui .basin-guide-instructions p {margin:7px 0 9px;}
+#basin-gui .basin-guide-instructions ol {margin:8px 0 10px;padding-left:22px;}
+#basin-gui .basin-guide-instructions li {margin:5px 0;padding-left:2px;}
+#basin-gui .basin-guide-details {margin:10px 0 3px;border:1px solid var(--b-line);border-radius:9px;padding:8px 12px;max-width:900px;}
+#basin-gui .basin-guide-details summary {cursor:pointer;font-weight:750;}
+#basin-gui .basin-guide-details p {margin-top:9px;}
+
+
+/* Live Score and badges stacked on the left; contrasting lake effects on the right. */
+@media(min-width:1000px){
+ #basin-gui .basin-score{display:grid;grid-template-columns:minmax(0,56%) minmax(0,44%);grid-template-rows:auto auto auto auto auto;column-gap:12px;row-gap:5px;padding:10px 15px;align-items:start;}
+ #basin-gui .basin-score>.basin-panelhead{grid-column:1;grid-row:1;margin:0 0 1px;}
+ #basin-gui .basin-score>.basin-metrics{grid-column:1;grid-row:2;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px;}
+ #basin-gui .basin-score>.basin-guardrail{grid-column:1;grid-row:3;margin:0;padding:5px 8px;}
+ #basin-gui .basin-score>.basin-score-badge-heading{grid-column:1;grid-row:4;min-width:0;margin:3px 0 0;gap:8px;}
+ #basin-gui .basin-score>.basin-live-badges{grid-column:1;grid-row:5;align-self:start;}
+ #basin-gui .basin-score>.basin-lake-bonus-callout{grid-column:2;grid-row:1 / 6;margin:0;align-self:stretch;}
+}
+#basin-gui .basin-score .basin-panelhead h2{font-size:16px;}
+#basin-gui .basin-score .basin-panelhead p{font-size:10px;margin:0;}
+#basin-gui .basin-score .basin-metric{padding:6px 5px;flex-direction:column;gap:2px;align-items:center;text-align:center;border-radius:6px;}
+#basin-gui .basin-score .basin-metric span{font-size:10px;line-height:1.1;}
+#basin-gui .basin-score .basin-metric strong{font-size:18px;line-height:1.05;}
+#basin-gui .basin-score-badge-heading{font-size:12px;}
+#basin-gui .basin-score-badge-heading small{font-size:10px;}
+#basin-gui .basin-badge-strip{gap:4px;}
+#basin-gui .basin-badge-strip .basin-live-badge{padding:5px 2px;gap:2px;border-radius:6px;}
+#basin-gui .basin-badge-strip .basin-badge-icon{width:26px;height:26px;}
+#basin-gui .basin-badge-strip .basin-badge-icon img{width:25px;height:25px;}
+#basin-gui .basin-badge-strip .basin-badge-copy strong{font-size:10px;line-height:1.12;}
+#basin-gui .basin-badge-strip .basin-badge-copy small{font-size:9px;margin-top:1px;line-height:1.1;}
+#basin-gui .basin-badge-strip .basin-badge-status{font-size:10px;}
+#basin-gui .basin-lake-bonus-callout{padding:6px 8px;gap:7px;grid-template-columns:minmax(125px,.7fr) minmax(0,3fr) minmax(170px,1fr);}
+#basin-gui .basin-lake-bonus-callout small{font-size:10px;line-height:1.2;margin-top:1px;}
+#basin-gui .basin-lake-bonus-callout .basin-bonus-list>div{padding:4px 3px;font-size:10px;gap:1px;}
+#basin-gui .basin-active-lake-effect{padding:5px 7px;font-size:11px;line-height:1.2;}
+@media(min-width:1000px){
+ #basin-gui .basin-lake-bonus-callout{display:flex;flex-direction:column;justify-content:space-between;gap:8px;background:#e9f1e4;border:1px solid #80a284;border-radius:10px;color:#153d2b;padding:12px 13px;min-width:0;}
+ #basin-gui .basin-lake-bonus-callout>div:first-child strong{font-size:15px;color:#153d2b;}
+ #basin-gui .basin-lake-bonus-callout small{color:#355f48;font-size:11px;}
+ #basin-gui .basin-lake-bonus-callout .basin-bonus-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;}
+ #basin-gui .basin-lake-bonus-callout .basin-bonus-list>div{background:#fffef7;border:1px solid #afc7af;color:#254734;border-radius:7px;padding:9px 5px;font-size:11px;}
+ #basin-gui .basin-lake-bonus-callout .basin-bonus-list>div.is-current{background:#28704d;color:#fff;border-color:#1d553b;box-shadow:0 0 0 1px #28704d;}
+ #basin-gui .basin-active-lake-effect{background:#d4e7cf;color:#143c2a;border:1px solid #9dbda1;border-radius:7px;padding:9px 10px;font-size:12px;}
+}
+
+/* Polished, succinct task instructions on the strategy selection screen. */
+#basin-gui .basin-main[data-stage="build"] ~ *{}
+#basin-gui .basin-instruction{padding:12px 18px;gap:12px;align-items:center;}
+#basin-gui .basin-instruction-step{white-space:nowrap;}
+#basin-gui .basin-guide-content h2{font-size:19px;margin:0 0 4px;}
+#basin-gui .basin-guide-instructions{font-size:13px;line-height:1.4;}
+#basin-gui .basin-guide-instructions p{margin:4px 0;}
+#basin-gui .basin-build-lead{font-size:13px;}
+#basin-gui .basin-build-tips{display:flex;flex-wrap:wrap;gap:6px;margin:7px 0 5px;}
+#basin-gui .basin-build-tips span{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--b-line);background:var(--b-board);padding:5px 8px;border-radius:7px;font-size:12px;}
+#basin-gui .basin-build-tips b{width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:#216556;color:#fff;font-size:11px;}
+#basin-gui .basin-build-footnote{font-size:12px;color:var(--b-muted);}
+#basin-gui .basin-guide-details{margin:6px 0 0;padding:5px 9px;font-size:12px;}
+@media(max-width:999px){#basin-gui .basin-score{padding:12px;}#basin-gui .basin-score .basin-metrics{grid-template-columns:repeat(6,minmax(0,1fr));}#basin-gui .basin-badge-strip{grid-template-columns:repeat(7,minmax(0,1fr));}}
+@media(max-width:700px){#basin-gui .basin-score .basin-metrics{grid-template-columns:repeat(3,minmax(0,1fr));}#basin-gui .basin-badge-strip{grid-template-columns:repeat(4,minmax(0,1fr));}#basin-gui .basin-lake-bonus-callout{grid-template-columns:1fr;}#basin-gui .basin-instruction{flex-direction:column;align-items:flex-start;}}
+@media(max-width:420px){#basin-gui .basin-badge-strip{grid-template-columns:repeat(3,minmax(0,1fr));}#basin-gui .basin-build-tips{flex-direction:column;}}
+
+/* Ultra-compact expanded scoreboard: no tall empty columns, legible bonus math. */
+#basin-gui .basin-score {padding:7px 12px !important;}
+#basin-gui .basin-score>.basin-panelhead {margin:0 !important;}
+#basin-gui .basin-score .basin-panelhead p{display:none;}
+#basin-gui .basin-score-toggle{min-height:28px;padding:3px 9px;font-size:11px;}
+#basin-gui .basin-score-content{grid-template-columns:minmax(0,1.18fr) minmax(0,.82fr);gap:7px 12px;align-items:start;}
+#basin-gui .basin-score-content>.basin-metrics{grid-column:1;grid-row:1;}
+#basin-gui .basin-score-content>.basin-guardrail{grid-column:1;grid-row:2;}
+#basin-gui .basin-score-content>.basin-score-badge-heading{grid-column:1;grid-row:3;}
+#basin-gui .basin-score-content>.basin-live-badges{grid-column:1;grid-row:4;}
+#basin-gui .basin-score-content>.basin-lake-bonus-callout{grid-column:2;grid-row:1 / 5;align-self:start;}
+#basin-gui .basin-score .basin-metrics{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px;}
+#basin-gui .basin-score .basin-metric{padding:4px 3px;gap:1px;min-height:0;justify-content:flex-start;}
+#basin-gui .basin-score .basin-metric span{font-size:9px;line-height:1.1;}
+#basin-gui .basin-score .basin-metric strong{font-size:17px;line-height:1;}
+#basin-gui .basin-score .basin-score-breakdown{display:block;font-size:9px;line-height:1.15;color:#d8f5d9;font-weight:700;text-align:center;margin-top:2px;}
+#basin-gui .basin-score .basin-guardrail{margin:2px 0 0;padding:3px 7px;font-size:11px;}
+#basin-gui .basin-score .basin-guardrail small{font-size:10px;}
+#basin-gui .basin-score-badge-heading{margin:0 !important;}
+#basin-gui .basin-score .basin-badge-strip{grid-template-columns:repeat(7,minmax(0,1fr));gap:3px;}
+#basin-gui .basin-score .basin-badge-strip .basin-live-badge{padding:2px 1px;gap:0;min-height:0;}
+#basin-gui .basin-score .basin-badge-strip .basin-badge-icon{width:21px;height:21px;}
+#basin-gui .basin-score .basin-badge-strip .basin-badge-icon img{width:20px;height:20px;}
+#basin-gui .basin-score .basin-badge-strip .basin-badge-copy strong{font-size:9px;}
+#basin-gui .basin-score .basin-badge-strip .basin-badge-copy small{font-size:8px;}
+#basin-gui .basin-score .basin-badge-strip .basin-badge-status{font-size:9px;}
+#basin-gui .basin-score .basin-lake-bonus-callout{padding:6px 8px !important;gap:4px !important;justify-content:flex-start !important;align-self:start !important;}
+#basin-gui .basin-score .basin-lake-bonus-callout>div:first-child strong{font-size:12px;}
+#basin-gui .basin-score .basin-lake-bonus-callout small{font-size:9px;}
+#basin-gui .basin-score .basin-lake-bonus-callout .basin-bonus-list{gap:3px;}
+#basin-gui .basin-score .basin-lake-bonus-callout .basin-bonus-list>div{padding:3px 4px;font-size:9px;}
+#basin-gui .basin-score .basin-active-lake-effect{padding:4px 6px;font-size:10px;}
+@media(max-width:1000px){#basin-gui .basin-score-content{grid-template-columns:1fr 1fr;}#basin-gui .basin-score .basin-badge-strip{grid-template-columns:repeat(4,minmax(0,1fr));}}
+@media(max-width:720px){#basin-gui .basin-score-content{grid-template-columns:1fr;}#basin-gui .basin-score-content>.basin-lake-bonus-callout{grid-column:1;grid-row:5;}#basin-gui .basin-score .basin-metrics{grid-template-columns:repeat(3,minmax(0,1fr));}#basin-gui .basin-score .basin-badge-strip{grid-template-columns:repeat(4,minmax(0,1fr));}}
+
+/* Compact exercise navigation at the very top, directly below the room header. */
+#basin-gui .basin-steps-disclosure {margin:0!important;border-bottom:1px solid var(--b-line)!important;}
+#basin-gui .basin-steps-disclosure>summary {padding:2px 10px!important;min-height:20px!important;line-height:1.15!important;gap:8px!important;font-size:11px!important;}
+#basin-gui .basin-steps-disclosure>summary span {font-size:10px!important;}
+#basin-gui .basin-steps-disclosure .basin-steps {padding:1px 6px!important;gap:2px!important;border-top:0!important;border-bottom:0!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;}
+#basin-gui .basin-steps-disclosure .basin-steps button {padding:2px 3px!important;min-height:22px!important;font-size:10px!important;line-height:1.15!important;letter-spacing:0!important;text-transform:none!important;white-space:normal!important;}
+#basin-gui .basin-steps-disclosure .basin-steps button span {display:inline-grid!important;width:17px!important;height:17px!important;margin-right:4px!important;border-width:1px!important;outline:0!important;font-size:10px!important;vertical-align:middle!important;}
+/* Score cards and badge cards touch: no blank band between them. */
+#basin-gui .basin-score .basin-score-content>.basin-metrics {margin-bottom:0!important;padding-bottom:0!important;row-gap:0!important;}
+#basin-gui .basin-score .basin-score-content>.basin-live-badges {margin-top:0!important;padding-top:0!important;row-gap:0!important;align-self:start!important;}
+@media(max-width:540px){#basin-gui .basin-steps-disclosure .basin-steps{grid-template-columns:repeat(2,minmax(0,1fr))!important;}}
+
+/* Compact brand header (~half original height); preserve room status and stopwatch. */
+#basin-gui .basin-topbar {min-height:0!important;padding:5px 14px!important;gap:12px!important;align-items:center!important;}
+#basin-gui .basin-brand {gap:9px!important;min-width:0!important;}
+#basin-gui .basin-logo {height:38px!important;max-height:38px!important;max-width:56px!important;width:auto!important;}
+#basin-gui .basin-brand strong {font-size:17px!important;line-height:1.05!important;letter-spacing:.035em!important;}
+#basin-gui .basin-brand small {font-size:10px!important;line-height:1.12!important;margin-top:2px!important;}
+#basin-gui .basin-session {gap:5px!important;font-size:10px!important;flex-wrap:wrap!important;justify-content:flex-end!important;}
+#basin-gui .basin-live, #basin-gui .basin-time {padding:4px 7px!important;line-height:1.1!important;white-space:nowrap!important;}
+#basin-gui .basin-session svg {width:12px!important;height:12px!important;vertical-align:-2px!important;}
+@media(max-width:590px){
+ #basin-gui .basin-topbar {padding:6px 9px!important;gap:7px!important;align-items:center!important;}
+ #basin-gui .basin-logo {height:32px!important;max-height:32px!important;max-width:44px!important;}
+ #basin-gui .basin-brand strong {font-size:14px!important;}
+ #basin-gui .basin-brand small {font-size:9px!important;max-width:190px!important;}
+ #basin-gui .basin-session {font-size:9px!important;}
+ #basin-gui .basin-live, #basin-gui .basin-time {padding:3px 5px!important;}
+}
+
+/* GSLBIP legibility and color-vision accessibility adjustments, Oct 2026.
+   Preserve official dark #164050, medium #7ab9c1, light #aadde0,
+   yellow #eca625 and white #ffffff throughout the design. */
+#basin-gui {
+  --b-navy: #164050;
+  --b-teal: #24676b;
+  --b-blue: #246b82;
+  --b-blue-soft: #e4f4f5;
+  --b-teal-soft: #e2f1f0;
+  --b-muted: #405c65;
+  --b-line: #9bbbc0;
+  --b-orange: #eca625;
+}
+/* Ensure all four lake-effect states are high contrast, particularly +3 and +2. */
+#basin-gui .basin-active-lake-effect,
+#basin-gui .basin-active-lake-effect.is-positive,
+#basin-gui .basin-active-lake-effect.is-negative {
+  color: #ffffff !important;
+  font-weight: 800;
+  font-size: 12px !important;
+  line-height: 1.35;
+  background: #164050;
+  border: 1px solid #7ab9c1;
+}
+#basin-gui .basin-active-lake-effect.is-positive { background: #175b40; border-color: #aadde0; }
+#basin-gui .basin-active-lake-effect.is-negative { background: #76391f; border-color: #eca625; }
+/* Lake tier: active state visibly outlined and labeled independently of hue. */
+#basin-gui .basin-lake-bonus-callout .basin-bonus-list>div.is-current {
+  background: #164050 !important;
+  color: #ffffff !important;
+  border: 2px solid #eca625 !important;
+  font-weight: 800;
+}
+#basin-gui .basin-lake-bonus-callout .basin-bonus-list>div.is-current strong { color: #ffffff !important; }
+#basin-gui .basin-lake-bonus-callout .basin-bonus-list>div:not(.is-current) {
+  color: #193d45;
+  background: #ffffff;
+  border-color: #97b8bd;
+}
+/* Earned: brilliant high-contrast border and a checkmark; not earned: monochrome. */
+#basin-gui .basin-score .basin-badge-strip .basin-live-badge.is-earned {
+  background: #f4fff7 !important;
+  color: #153f2e !important;
+  border: 3px solid #16c958 !important;
+  box-shadow: inset 0 0 0 1px #145531;
+}
+#basin-gui .basin-score .basin-badge-strip .basin-live-badge.is-earned .basin-badge-status {
+  color: #124a29 !important;
+  font-weight: 900;
+}
+#basin-gui .basin-score .basin-badge-strip .basin-live-badge:not(.is-earned) {
+  background: #676f74 !important;
+  color: #ffffff !important;
+  border: 2px solid #b9c0c4 !important;
+}
+#basin-gui .basin-score .basin-badge-strip .basin-live-badge:not(.is-earned) .basin-badge-icon { filter: grayscale(1) !important; opacity: .72 !important; }
+#basin-gui .basin-score .basin-badge-strip .basin-badge-copy strong {
+  font-size: 11px !important; line-height: 1.13 !important;
+}
+#basin-gui .basin-score .basin-badge-strip .basin-badge-copy small,
+#basin-gui .basin-score .basin-badge-strip .basin-badge-status {
+  font-size: 10px !important; line-height: 1.15 !important;
+}
+#basin-gui .basin-score .basin-badge-strip .basin-live-badge { min-width: 0; }
+/* Readability of small numerical explanations and captions. */
+#basin-gui .basin-score .basin-score-breakdown { font-size: 11px !important; line-height: 1.25 !important; color: #e9fff0 !important; }
+#basin-gui .basin-score .basin-metric span { color: #e6f2f4 !important; }
+#basin-gui .basin-score .basin-lake-bonus-callout small { color: #254b3f; font-size: 11px !important; }
+#basin-gui .basin-score .basin-lake-bonus-callout .basin-bonus-list>div { font-size: 11px !important; line-height: 1.2 !important; }
+#basin-gui button:focus-visible, #basin-gui select:focus-visible,
+#basin-gui [tabindex]:focus-visible,
+#basin-scribe-intro button:focus-visible {
+  outline: 3px solid #eca625 !important; outline-offset: 3px !important;
+}
+/* Avoid forcing seven badges into illegibly narrow cells on small devices. */
+@media (max-width: 1050px) {
+  #basin-gui .basin-score .basin-badge-strip { grid-template-columns: repeat(4,minmax(0,1fr)) !important; gap: 3px !important; }
+}
+@media (max-width: 520px) {
+  #basin-gui .basin-score .basin-badge-strip { grid-template-columns: repeat(2,minmax(0,1fr)) !important; }
+}
+
+
+/* Badge numbers are the primary feedback: no redundant earned-status circles. */
+#basin-gui .basin-score .basin-badge-strip .basin-badge-status { display:none !important; }
+#basin-gui .basin-score .basin-badge-strip .basin-badge-copy small { font-size:14px !important; line-height:1.15 !important; margin-top:3px !important; opacity:1 !important; }
+#basin-gui .basin-score .basin-badge-strip .basin-badge-copy small b { font-size:14px !important; font-weight:850 !important; line-height:1.15 !important; font-variant-numeric:tabular-nums; }
+@media(max-width:650px) {
+  #basin-gui .basin-score .basin-badge-strip .basin-badge-copy small,
+  #basin-gui .basin-score .basin-badge-strip .basin-badge-copy small b { font-size:13px !important; }
+}
+
+/* Badge cards: display goal thresholds only, not live-score values. */
+#basin-gui #basin-live-badges .basin-live-badge:last-child .basin-badge-copy small{font-size:11px!important;line-height:1.35!important;white-space:normal!important;overflow-wrap:normal!important;}
+
+/* Compact Step 1 instructions: one heading line, two useful tiles. */
+#basin-gui #basin-stage-title .basin-build-title-prompt {display:inline;font-size:clamp(12px,1.12vw,15px);font-weight:600;color:#405c65;margin-left:14px;vertical-align:baseline;}
+#basin-gui .basin-build-guide {gap:0;max-width:none;}
+#basin-gui .basin-build-guide .basin-playful-tiles {grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;align-items:stretch;}
+#basin-gui .basin-build-guide .basin-playful-note {margin:0;border:1px solid #cad5c1;border-left:3px solid #eca625;border-radius:10px;padding:10px 13px;font-size:13px;line-height:1.43;}
+#basin-gui .basin-build-guide .basin-playful-action {padding:10px 13px;}
+@media(max-width:690px){
+ #basin-gui #basin-stage-title .basin-build-title-prompt {display:block;margin-left:0;margin-top:2px;}
+ #basin-gui .basin-build-guide .basin-playful-tiles {grid-template-columns:1fr;}
+}
+
+/* Compact, directly signaled Basin Supply status: no separate guardrail row. */
+#basin-gui .basin-score .basin-metric > span {font-size:13px!important;line-height:1.15!important;font-weight:800!important;letter-spacing:0!important;}
+#basin-gui .basin-score .basin-metric.basin-supply-met {background:#175b40!important;border:2px solid #71e0a2!important;color:#ffffff!important;}
+#basin-gui .basin-score .basin-metric.basin-supply-low {background:#88332c!important;border:2px solid #ffb9af!important;color:#ffffff!important;}
+#basin-gui .basin-score .basin-metric.basin-supply-met > span,
+#basin-gui .basin-score .basin-metric.basin-supply-low > span {color:#ffffff!important;}
+#basin-gui .basin-score .basin-metric .basin-supply-explanation {display:block;color:#ffffff!important;font-size:10px!important;line-height:1.2!important;font-weight:700!important;text-align:center;max-width:100%;}
+#basin-gui .basin-score .basin-metric:is(.basin-supply-met,.basin-supply-low) {flex-wrap:wrap!important;gap:2px 5px!important;align-content:center!important;}
+#basin-gui .basin-score .basin-metric .basin-supply-explanation {flex-basis:100%!important;}
 </style>
 
 <script>
@@ -758,6 +1268,7 @@
   let reportParticipants = '', reportHardest = '', reportTakeaway = '';
   let submittedAt = null;
   let sharedCategory = 'Agriculture';
+  let adaptCategory = 'Agriculture';
   let submissionPoll = null;
   let supabaseClient = null, roomId = null, roomVersion = 0, roomChannel = null;
   let syncReady = false, applyingRemote = false, syncTimer = null, lastSyncedState = '';
@@ -986,9 +1497,29 @@
       return `<div class="basin-slot is-filled"><span class="slot-num">${i+1}${seen[id]===2?' · 2× play':''}</span><strong>${byId(id).name}</strong><small>${byId(id).cat}</small><button type="button" data-remove="${i}" aria-label="Remove ${byId(id).name}" ${packageLocked?'disabled':''}>×</button></div>`;
     }).join('');
     root.querySelector('#basin-package-status').textContent = `${selected.length} of 8 cards selected`;
+    root.querySelector('#basin-return-allocation').hidden=!(editingCompletePackage&&selected.length===8);
   }
   function renderScore(){
     const s=scoreState(), t=s.t;
+    const badgeSpec=[
+      ['Cost conscious',s.cost,16,'≤',s.cost<=16,Math.max(0,Math.min(100,100-Math.max(0,s.cost-16)*10))],
+      ['Lake forward',s.currentLake,9,'≥',s.currentLake>=9,Math.max(0,Math.min(100,s.currentLake/9*100))],
+      ['Supply resilient',s.currentSupply,5,'≥',s.currentSupply>=5,Math.max(0,Math.min(100,s.currentSupply/5*100))],
+      ['Ecosystem strong',s.eco,8,'≥',s.eco>=8,Math.max(0,Math.min(100,s.eco/8*100))],
+      ['Ag supportive',s.ag,4,'≥',s.ag>=4,Math.max(0,Math.min(100,s.ag/4*100))],
+      ['Clean air',s.dust,2,'≥',s.dust>=2,Math.max(0,Math.min(100,s.dust/2*100))],
+      ['Balanced',null,null,'',s.cost<=20&&s.currentSupply>=4&&s.currentLake>=7&&s.eco>=6&&s.ag>=0&&s.dust>=1,0]
+    ];
+    const balancedPass=[s.cost<=20,s.currentSupply>=4,s.currentLake>=7,s.eco>=6,s.ag>=0,s.dust>=1].filter(Boolean).length;
+    badgeSpec[6][5]=balancedPass/6*100;
+    const reached=badgeSpec.filter(b=>b[4]).length;
+    root.querySelector('#basin-badge-count').textContent=`${reached} of 7 meeting targets`;
+    root.querySelector('#basin-badge-progress').innerHTML=badgeSpec.map(b=>{
+      const [name,value,target,sign,met,pct]=b;
+      const label=value===null?`${balancedPass}/6 conditions`:`${value} ${sign} ${target}`;
+      const status=met?'Target met':'Working toward target';
+      return `<div class="basin-progress-badge ${met?'is-on-track':''}" title="${name}: ${label}. ${status}. These scores may change with the water future and optional strategy."><strong>${name}</strong><span class="basin-progress-values">${label}</span><div class="basin-progress-track"><div class="basin-progress-fill" style="width:${pct}%"></div></div><small>${met?'✓ Meets target':'Not yet'}</small></div>`;
+    }).join('');
     root.querySelector('#basin-water-total').textContent=s.currentLake+s.currentSupply;
     root.querySelector('#basin-lake').textContent=s.currentLake;
     root.querySelector('#basin-supply').textContent=s.currentSupply;
@@ -1001,17 +1532,29 @@
       const action=b.dataset.allocate;
       b.disabled=packageLocked||(action==='lake-minus'&&lake<=0)||(action==='lake-plus'&&supply<=0)||(action==='supply-minus'&&supply<=0)||(action==='supply-plus'&&lake<=0);
     });
-    root.querySelector('#basin-metrics').innerHTML=[['Cost',s.cost],['Lake',s.currentLake],['Basin supply',s.currentSupply],['Ecosystem health',s.eco],['Agriculture & economy',s.ag],['Dust reduction',s.dust]].map(x=>`<div class="basin-metric"><span>${x[0]}</span><strong>${x[1]}</strong></div>`).join('');
-    const g=root.querySelector('#basin-guardrail');
-    const started=selected.length>0, ok=s.currentSupply>=4;
-    g.classList.toggle('is-fail',started&&!ok);
-    g.innerHTML=`<i data-lucide="${!started?'circle-dashed':ok?'shield-check':'triangle-alert'}" aria-hidden="true"></i><div><strong>${!started?'Begin by selecting strategies':ok?'Basin needs currently met':'Package fails basin needs'}</strong><small>Current supply is ${s.currentSupply}; it must remain at 4 or more.</small></div>`;
+    root.querySelector('#basin-metrics').innerHTML=[
+      ['Cost',s.cost,''],['Lake',s.currentLake,''],['Basin supply',s.currentSupply,''],
+      ['Ecosystem health',s.eco,s.packageComplete?`${s.eco-s.bonus} ${s.bonus>=0?'+':'−'} ${Math.abs(s.bonus)} lake bonus = ${s.eco}`:''],
+      ['Agriculture & economy',s.ag,''],
+      ['Dust reduction',s.dust,s.packageComplete?`${s.dust-s.bonus} ${s.bonus>=0?'+':'−'} ${Math.abs(s.bonus)} lake bonus = ${s.dust}`:'']
+    ].map(([name,value,detail])=>{
+      const isSupply=name==='Basin supply';
+      const status=isSupply ? (s.currentSupply>=4 ? 'Basin needs met · extra points buffer drought' : 'Below 4 · basin needs not met') : '';
+      const supplyClass=isSupply ? (s.currentSupply>=4 ? 'basin-supply-met' : 'basin-supply-low') : '';
+      return `<div class="basin-metric ${detail?'basin-metric-with-bonus':''} ${supplyClass}"><span>${name}</span><strong>${value}</strong>${status?`<small class="basin-supply-explanation">${status}</small>`:''}${detail?`<small class="basin-score-breakdown">${detail}</small>`:''}</div>`;
+    }).join('');
     const lock=root.querySelector('#basin-lock');
     lock.hidden=packageLocked;
     lock.disabled=selected.length!==8;
     lock.textContent=selected.length===8?'Confirm allocation & draw water future':`Select ${8-selected.length} more strateg${8-selected.length===1?'y':'ies'} to continue`;
     const bonusKey=s.currentLake<=5?'low':s.currentLake<=9?'neutral':s.currentLake<=13?'plus-two':'plus-three';
     root.querySelectorAll('[data-bonus]').forEach(row=>row.classList.toggle('is-current',s.packageComplete&&row.dataset.bonus===bonusKey));
+    const lakeEffect=root.querySelector('#basin-active-lake-effect');
+    const lakeEffectValue=s.packageComplete?(s.currentLake<=5?-2:s.currentLake<=9?0:s.currentLake<=13?2:3):null;
+    lakeEffect.textContent=lakeEffectValue===null?'Lake bonus begins at 8 strategies.':`Lake ${s.currentLake}: ${lakeEffectValue>0?'+':''}${lakeEffectValue} added to both Ecosystem and Dust (already included above).`;
+    lakeEffect.classList.toggle('is-positive',lakeEffectValue>0);
+    lakeEffect.classList.toggle('is-negative',lakeEffectValue<0);
+
     const earnedBadges=Object.fromEntries(s.badges);
     const badgeArt={
       cost:'data:image/png;base64,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',
@@ -1031,8 +1574,10 @@
     ];
     root.querySelector('#basin-live-badges').innerHTML=badgeDetails.map(b=>{
       const earned=Boolean(earnedBadges[b.name]);
+      const target=badgeSpec.find(x=>x[0].toLowerCase()===b.name.toLowerCase().replace('agriculture supportive','ag supportive').replace('balanced strategy','balanced'));
+      const progressLabel=target?(target[2]===null?'C≤20 · S≥4 · L≥7 · E≥6 · A≥0 · D≥1':`${target[3]} ${target[2]}`):b.rule;
       const icon=b.art?`<img src="${b.art}" alt="">`:`<i data-lucide="${b.icon}"></i>`;
-      return `<div class="basin-live-badge ${earned?'is-earned':''}" aria-label="${b.name}: ${earned?'earned':'not yet earned'}"><span class="basin-badge-icon" aria-hidden="true">${icon}</span><span class="basin-badge-copy"><strong>${b.name}</strong><small><b>${b.value}</b></small><small class="basin-badge-rule">${b.rule}</small></span><span class="basin-badge-status" aria-hidden="true">${earned?'✓':'○'}</span></div>`;
+      return `<div class="basin-live-badge ${earned?'is-earned':''}" aria-label="${b.name}: ${earned?'earned':'not yet earned'}"><span class="basin-badge-icon" aria-hidden="true">${icon}</span><span class="basin-badge-copy"><strong>${b.name}</strong><small><b>${progressLabel}</b></small></span></div>`;
     }).join('');
     renderNavState();
     if(window.lucide) lucide.createIcons({attrs:{width:16,height:16}});
@@ -1069,7 +1614,33 @@
   let displayedStage='';
   function setVisibleStage(stage){
     const main=root.querySelector('#basin-main');
+    const enteredAllocation=stage==='allocation'&&displayedStage!=='allocation';
     main.dataset.stage=stage;
+    if(enteredAllocation){
+      let hasSeen=false;
+      try{hasSeen=sessionStorage.getItem('basin-climate-warning-seen:'+new URLSearchParams(location.search).toString())==='1';}catch(_e){}
+      if(!hasSeen)document.getElementById('basin-climate-warning').hidden=false;
+    }
+    // Concise challenge / discuss / act guidance; game rules and scoring remain unchanged.
+    const guideCard=(challenge,question,action,note,details='')=>`<div class="basin-playful-guide"><p class="basin-playful-challenge">${challenge}</p><div class="basin-playful-tiles"><div class="basin-playful-discuss"><span class="basin-playful-tag">💬 TALK IT OVER</span><p>${question}</p></div><div class="basin-playful-action"><span class="basin-playful-tag">➜ YOUR MOVE</span><p>${action}</p></div></div>${note?`<p class="basin-playful-note">💡 ${note}</p>`:''}${details}</div>`;
+    const compactBuildGuide=(action,note)=>`<div class="basin-playful-guide basin-build-guide"><div class="basin-playful-tiles"><div class="basin-playful-action"><span class="basin-playful-tag">➜ YOUR MOVE</span><p>${action}</p></div><p class="basin-playful-note">💡 ${note}</p></div></div>`;
+    const instruction={
+      build:['STEP 1 OF 5','Build your water strategy',compactBuildGuide('Decide all 8 strategies as a group, or begin the game with each person choosing a strategy, then collaborate on the rest of your scenario. The scribe selects <strong>8 cards total</strong> from the menu.', 'A strategy can be played twice; each play uses one of your eight slots. There is no single winning scenario. <strong>Cost (0–5):</strong> lower is better. <strong>Water, Ecosystem, Agriculture and Dust (−3 to +3):</strong> higher is better. Scores illustrate tradeoffs based on best available data, not authoritative real-world predictions.') ],
+      allocation:['STEP 2 OF 5','Where should your water go?',guideCard('Your strategies produced water benefits. Where should they go?', 'How much should support <strong>Great Salt Lake</strong>, and how much should protect <strong>Basin Supply</strong>?', 'Use the <strong>+ / −</strong> controls to divide the available water. Then press <strong>Confirm allocation</strong>.', 'Basin Supply needs at least <strong>4 points</strong>; any extra provides a drought buffer. Lake water may earn Ecosystem and Dust bonuses. A dry future could reduce both scores.')],
+      shock:['STEP 3 OF 5','Expect the unexpected!',guideCard('Will your package hold up in an uncertain water future?', 'If water supplies change, which of your priorities is most vulnerable?', 'Have the scribe press <strong>Draw randomly for this room</strong>. See what happens to the Lake and Basin Supply scores.', 'The water future is applied automatically. Check Live Score: do you still have at least 4 Basin Supply points?')],
+      adapt:['STEP 4 OF 5','Adapt or hold your ground?',guideCard('You get one more move—but it comes at a price.', 'Would another strategy meaningfully improve your scenario after the water future?', 'Choose a ninth strategy from the <strong>category menu</strong>, or press <strong>Skip 9th Strategy</strong>.', 'The ninth strategy costs <strong>double</strong>; all other scores stay normal. If it adds water, allocate those points before confirming.')],
+      results:['STEP 5 OF 5','Make your case',guideCard('What did your group achieve—and what did it sacrifice?', 'Can everyone <strong>live with</strong> the final scenario? What would it take to implement these strategies?', 'Review scores and badges, record key takeaways or objections, then have the scribe press <strong>Submit room report</strong>.', 'Basin Supply below 4 means basin needs are not met. Disagreement is okay—record any objections rather than forcing unanimity.')]
+    };
+    const guide=instruction[stage]||instruction.build;
+    root.querySelector('#basin-stage-number').textContent=guide[0];
+    root.querySelector('#basin-stage-title').textContent=guide[1];
+    if(stage==='build'){
+      const subtitle=document.createElement('span');
+      subtitle.className='basin-build-title-prompt';
+      subtitle.textContent='Can your group agree on eight strategies?';
+      root.querySelector('#basin-stage-title').appendChild(subtitle);
+    }
+    root.querySelector('#basin-stage-help').innerHTML=guide[2];
     if(stage!==displayedStage){
       displayedStage=stage;
       if(stage!=='build' && !applyingRemote) window.scrollTo({top:0,behavior:'smooth'});
@@ -1103,23 +1674,28 @@
     const t=totals();
     if(step==='shock'){
       if(!waterFuture){
-        panel.innerHTML=`<div class="basin-phase-grid"><div class="basin-event"><h2>Draw this room’s water future</h2><p>The package is locked. This room will independently draw Extreme Drought, Hotter and Drier, Earlier Runoff, or Wetter Period.</p><button type="button" class="basin-primary" data-draw-future>Draw randomly for this room</button></div></div>`;
+        panel.innerHTML=`<div class="basin-phase-grid"><div class="basin-event"><h2>Draw your water future</h2><p>Your eight-strategy package is now locked. Draw one possible water future for this room; its water effects will be applied automatically.</p><button type="button" class="basin-primary" data-draw-future>Draw randomly for this room</button></div></div>`;
       } else {
-        panel.innerHTML=`<div class="basin-phase-grid"><div class="basin-event"><h2>Water future revealed</h2><p><strong>${waterFuture.name}</strong> — ${waterFuture.description}</p><div class="event-value ${waterFuture.delta>0?'is-positive':''}">${waterFuture.delta>0?'+':''}${waterFuture.delta} water</div><div class="basin-split"><div><span>Lake</span><strong>${waterFuture.lake>0?'+':''}${waterFuture.lake}</strong></div><div><span>Basin supply</span><strong>${waterFuture.supply>0?'+':''}${waterFuture.supply}</strong></div></div><p>Lake and Basin Supply have updated immediately above and in the live score.</p><button type="button" class="basin-primary" data-advance="adapt">Continue to optional strategy</button></div></div>`;
+        panel.innerHTML=`<div class="basin-phase-grid"><div class="basin-event"><h2>Your water future</h2><p><strong>${waterFuture.name}</strong> — ${waterFuture.description}</p><div class="event-value ${waterFuture.delta>0?'is-positive':''}">${waterFuture.delta>0?'+':''}${waterFuture.delta} water</div><div class="basin-split"><div><span>Lake</span><strong>${waterFuture.lake>0?'+':''}${waterFuture.lake}</strong></div><div><span>Basin supply</span><strong>${waterFuture.supply>0?'+':''}${waterFuture.supply}</strong></div></div><p>Lake and Basin Supply have updated immediately above and in the live score.</p><button type="button" class="basin-primary" data-advance="adapt">Continue to optional strategy</button></div></div>`;
       }
       renderNavState();
     }
     if(step==='adapt'){
       const eligible=eligibleAdaptStrategies();
-      if(!adaptId||!eligible.some(s=>s.id===adaptId)){
-        adaptId=eligible[0]?.id||null;
-        adaptLake=Math.max(0,eligible[0]?.water||0);
+      // Leave the ninth strategy unselected until a participant explicitly chooses one.
+      if(adaptId && !eligible.some(s=>s.id===adaptId)){
+        adaptId=null;
+        adaptLake=0;
         adaptSupply=0;
       }
       const a=byId(adaptId);
+      const adaptCategories=['Agriculture','Habitat','Infrastructure','Municipal','Industry','Operations'].filter(category=>eligible.some(s=>s.cat===category));
+      // Categories with no playable cards are omitted from the ninth-strategy dropdown.
+      if(!adaptCategories.includes(adaptCategory)) adaptCategory=(a&&adaptCategories.includes(a.cat)?a.cat:adaptCategories[0])||'';
+      const visibleAdapt=eligible.filter(s=>s.cat===adaptCategory);
       const allocation=a&&a.water>0?`<div class="basin-trays" aria-label="Allocate ninth-strategy water between lake and basin supply"><div class="basin-tray basin-lake"><span>Lake</span><div class="basin-stepper"><button type="button" data-adapt-allocate="lake-minus" ${adaptLake<=0?'disabled':''}>−</button><strong>${adaptLake}</strong><button type="button" data-adapt-allocate="lake-plus" ${adaptSupply<=0?'disabled':''}>+</button></div></div><div class="basin-tray basin-supply"><span>Basin supply</span><div class="basin-stepper"><button type="button" data-adapt-allocate="supply-minus" ${adaptSupply<=0?'disabled':''}>−</button><strong>${adaptSupply}</strong><button type="button" data-adapt-allocate="supply-plus" ${adaptLake<=0?'disabled':''}>+</button></div></div></div>`:'';
       const special=a?.note?`<p class="basin-special-water">Special adjustment: ${a.note}.</p>`:'';
-      panel.innerHTML=`<div class="basin-phase-grid"><div><h2>Optional ninth strategy</h2><p>The group may respond after seeing the water future.</p><div class="basin-double-cost-warning" role="note"><strong>⚠ Ninth strategy costs DOUBLE (2×)</strong><span>Every ninth strategy costs twice its usual amount. Water, ecosystem, agriculture and dust scores are NOT doubled.</span></div><div class="basin-event"><strong class="basin-adapt-label">Choose from the full strategy menu</strong><p class="basin-adapt-help">Choose a strategy. Your selection turns bright green; costs shown are doubled.</p><div class="basin-adapt-list" role="group" aria-label="Available ninth strategies">${eligible.map(s=>`<button type="button" class="basin-adapt-card ${s.id===adaptId?'is-selected':''}" data-select-adapt="${s.id}" aria-pressed="${s.id===adaptId?'true':'false'}"><span class="basin-adapt-name">${escapeHtml(s.name)}</span><span class="basin-adapt-category">${escapeHtml(s.cat)}</span><span class="basin-adapt-values"><span class="basin-doubled-cost"><b>2× COST: ${s.cost} → ${s.cost*2}</b></span><span>Water ${s.water>0?'+':''}${s.water}</span><span>Eco ${s.eco>0?'+':''}${s.eco}</span><span>Ag ${s.ag>0?'+':''}${s.ag}</span><span>Dust ${s.dust>0?'+':''}${s.dust}</span></span>${s.note?`<span class="basin-adapt-note">Special: ${escapeHtml(s.note)}</span>`:''}</button>`).join('')}</div>${a?`${special}${allocation}<div class="basin-adapt-actions"><button type="button" class="basin-primary" data-apply-adapt>Add ninth strategy (2× cost)</button><button type="button" class="basin-outline" data-advance="results">Skip 9th Strategy</button></div>`:'<div class="basin-adapt-actions"><button type="button" class="basin-outline" data-advance="results">Skip adaptation</button></div>'}</div></div></div>`;
+      panel.innerHTML=`<div class="basin-adapt-workspace"><aside class="basin-adapt-sidebar" aria-label="Ninth strategy decision"><h2>Optional ninth strategy</h2><p>Review the water future and decide whether to add one more strategy.</p><div class="basin-double-cost-warning" role="note"><strong>⚠ Ninth strategy costs DOUBLE (2×)</strong><span>All other scores remain unchanged.</span></div>${a?`<div class="basin-adapt-current"><b>Selected ninth strategy</b><div>${escapeHtml(a.name)}</div><span>Double cost: ${a.cost*2}</span></div>`:'<p>Select a strategy on the right, or skip this step.</p>'}${special}${a&&a.water>0?`<div class="basin-adapt-water-title">Allocate this strategy’s ${a.water} additional water point${a.water===1?'':'s'}</div>`:''}${allocation}<div class="basin-adapt-actions">${a?'<button type="button" class="basin-primary" data-apply-adapt>Add ninth strategy (2× cost)</button>':''}<button type="button" class="basin-outline" data-advance="results">Skip 9th Strategy</button></div></aside><section class="basin-adapt-menu" aria-label="Ninth strategy menu"><div class="basin-panelhead"><div><h2>Strategy menu</h2><p>Browse by category, as in Step 1. Tap a strategy to select it.</p></div></div><label class="basin-adapt-filter-label">Strategy category<select id="basin-adapt-filter" aria-label="Ninth strategy category">${adaptCategories.map(c=>`<option value="${c}" ${c===adaptCategory?'selected':''}>${c}</option>`).join('')}</select></label><div class="basin-adapt-list" role="group" aria-label="Available ninth strategies in selected category">${visibleAdapt.map(s=>`<button type="button" class="basin-adapt-card ${s.id===adaptId?'is-selected':''}" data-select-adapt="${s.id}" aria-pressed="${s.id===adaptId?'true':'false'}"><span class="basin-adapt-name">${escapeHtml(s.name)}</span><span class="basin-adapt-category">${escapeHtml(s.cat)}</span><span class="basin-adapt-values"><span class="basin-doubled-cost"><b>2× COST: ${s.cost} → ${s.cost*2}</b></span><span>Water ${s.water>0?'+':''}${s.water}</span><span>Eco ${s.eco>0?'+':''}${s.eco}</span><span>Ag ${s.ag>0?'+':''}${s.ag}</span><span>Dust ${s.dust>0?'+':''}${s.dust}</span></span>${s.note?`<span class="basin-adapt-note">Special: ${escapeHtml(s.note)}</span>`:''}</button>`).join('')}</div></section></div>`;
       renderNavState();
       // The green selected card and the user's scroll position stay put after +/- clicks.
       const newAdaptList = root.querySelector('.basin-adapt-list');
@@ -1127,14 +1703,22 @@
     }
     if(step==='results'){
       const s=scoreState();
-      panel.innerHTML=`<div class="basin-phase-grid"><div><h2>${s.currentSupply>=4?'Viable basin package':'Basin needs not met'}</h2><p>The final lake bonus and earned badges are shown in the live-score panel at right.</p></div><div><span class="basin-stage-kicker">FINAL STEP · GROUP REVIEW</span><h2>Review and submit your group results</h2><p>Complete the short report below, then select the large Submit button to finish for everyone in this room.</p><div class="basin-summary"><div><span>Cost</span><strong>${s.cost}</strong></div><div><span>Lake / Supply</span><strong>${s.currentLake} / ${s.currentSupply}</strong></div><div><span>Ecosystem / Ag / Dust</span><strong>${s.eco} / ${s.ag} / ${s.dust}</strong></div></div><div class="basin-report"><label>Participants<input data-report="participants" value="${escapeHtml(reportParticipants)}" placeholder="Names or initials, separated by commas"></label><label>Hardest trade-off<textarea data-report="hardest" placeholder="What did your group struggle with?">${escapeHtml(reportHardest)}</textarea></label><label>One takeaway<textarea data-report="takeaway" placeholder="What should the full room hear?">${escapeHtml(reportTakeaway)}</textarea></label><button type="button" class="basin-primary" data-submit-report ${submittedAt?'disabled':''}>${submittedAt?'Report submitted':'Submit room report'}</button><p id="basin-submit-status" class="basin-submit-status ${submittedAt?'is-success':''}">${submittedAt?'This playthrough has been submitted and locked.':''}</p></div></div></div>`;
+      panel.innerHTML=`<div class="basin-phase-grid"><div><h2>${s.currentSupply>=4?'Viable basin package':'Basin needs not met'}</h2><p>The final lake bonus and earned badges are shown in the live score above.</p></div><div><span class="basin-stage-kicker">FINAL STEP · GROUP REVIEW</span><h2>Review and submit your group results</h2><p>Make sure everyone can live with the scenario. Record key trade-offs, objections (if any), and what the group learned. Then submit once for the room.</p><div class="basin-summary"><div><span>Cost</span><strong>${s.cost}</strong></div><div><span>Lake / Supply</span><strong>${s.currentLake} / ${s.currentSupply}</strong></div><div><span>Ecosystem / Ag / Dust</span><strong>${s.eco} / ${s.ag} / ${s.dust}</strong></div></div><div class="basin-report"><label>Participants<input data-report="participants" value="${escapeHtml(reportParticipants)}" placeholder="Names or initials, separated by commas"></label><label>Hardest trade-off<textarea data-report="hardest" placeholder="What did your group struggle with?">${escapeHtml(reportHardest)}</textarea></label><label>One takeaway<textarea data-report="takeaway" placeholder="What should the full room hear?">${escapeHtml(reportTakeaway)}</textarea></label><button type="button" class="basin-primary" data-submit-report ${submittedAt?'disabled':''}>${submittedAt?'Report submitted':'Submit room report'}</button><p id="basin-submit-status" class="basin-submit-status ${submittedAt?'is-success':''}">${submittedAt?'This playthrough has been submitted and locked.':''}</p></div></div></div>`;
       renderNavState();
     }
     renderScore();
   }
+  const climateWarning=document.getElementById('basin-climate-warning');
+  const climateKey='basin-climate-warning-seen:'+new URLSearchParams(location.search).toString();
+  const dismissClimateWarning=()=>{
+    climateWarning.hidden=true;
+    try{sessionStorage.setItem(climateKey,'1');}catch(_e){}
+  };
+  document.getElementById('basin-climate-continue').addEventListener('click',dismissClimateWarning);
   root.addEventListener('click',e=>{
     if(submittedAt) return;
     if(e.target.closest('[data-edit-package]')){editingCompletePackage=true;renderBuild();return;}
+    if(e.target.closest('[data-return-allocation]')){editingCompletePackage=false;renderBuild();return;}
     const submit=e.target.closest('[data-submit-report]'); if(submit){submitRoomReport(submit);return;}
     const step=e.target.closest('[data-step]'); if(step){setStep(step.dataset.step);return;}
     const add=e.target.closest('[data-add]'); if(add){const s=byId(add.dataset.add),c=counts();if(!packageLocked&&selected.length<8&&(c[s.id]||0)===0){resetLaterStages();selected.push(s.id);rebalance();renderBuild();}return;}
@@ -1161,6 +1745,7 @@
       const scrollTop=list?list.scrollTop:0;
       adaptId=id;
       const strategy=byId(adaptId);
+      adaptCategory=strategy?.cat||adaptCategory;
       adaptLake=Math.max(0,strategy?.water||0);
       adaptSupply=0;
       setStep('adapt');
@@ -1178,6 +1763,12 @@
     if(e.target.closest('[data-apply-adapt]')){if(phase==='adapt'){adapted=true;setStep('results');}return;}
   });
   root.addEventListener('click',e=>{if(e.target.closest('button')&&!e.target.closest('[data-submit-report]')) setTimeout(queueRoomSync,0);});
+  root.addEventListener('change',e=>{
+    if(e.target.id==='basin-adapt-filter'){
+      adaptCategory=e.target.value;
+      setStep('adapt');
+    }
+  });
   root.querySelector('#basin-filter').addEventListener('change',e=>{
     if(packageLocked||submittedAt) return;
     sharedCategory=e.target.value;
@@ -1194,6 +1785,115 @@
   renderBuild();
   initializeCollaboration();
   if(window.lucide) lucide.createIcons({attrs:{width:16,height:16}});
+})();
+</script>
+
+
+<script>
+/* Standalone visual tour: does not alter scoring, state, or Supabase writes. */
+(()=>{
+ const main=document.getElementById('basin-main');
+ const intro=document.getElementById('basin-scribe-intro');
+ const climate=document.getElementById('basin-climate-warning');
+ if(!main)return;
+ const steps={
+  build:[
+   ['#basin-filter','Explore your options','Start here! After everyone has reviewed the Strategies Menu document, the scribe can guide your team through strategy categories and select strategies to include in your scenario. The group should discuss any strategy before the scribe adds it.','If you’re having trouble getting started, ask each member of your group for one strategy suggestion to be added, no discussion, to your package, and then collaboratively decide on the rest of the strategies!'],
+   ['.basin-library','Compare the tradeoffs','Check the scores for Cost, Water, Ecosystem, Agriculture, and Dust. A higher score is always better, except for Cost, which reflects monetary price.'],
+   ['#basin-slots','Build your team’s eight strategy package','Your chosen strategies collect here. Most strategies can be used up to twice, with some exceptions. Once you have eight strategies, you will allocate your water points to the Basin or directly to the Lake.'],
+   ['#basin-score-content','Watch your scores','As you play, watch your Live Score and progress toward earning badges. Note that Lake points also affect Ecosystem and Dust scores!']
+  ],
+  allocation:[
+   ['.basin-allocation','Your water, your call','Use the plus and minus controls to split the water benefit between Great Salt Lake and Basin Supply.'],
+   ['#basin-allocation-status','Keep a supply buffer','The Basin needs at least 4 Supply points; anything above 4 will act as a drought buffer for the Basin. Your scenario is about to weather a future climate scenario, which may or may not take water away from the Basin Supply and the Lake.'],
+   ['#basin-lock','Confirm the group’s choice','Once everyone agrees on the water allocation, confirm the allocation to move on. You can return to edit your eight strategies first, if you like.']
+  ],
+  shock:[
+   ['#basin-phase','Here comes uncertainty!','Draw one possible water future. Watch what changes in Lake and Basin Supply.']
+  ],
+  adapt:[
+   ['#basin-adapt-filter','One last chance to adapt','Browse the remaining eligible strategies by category. Would your strategy benefit from adding another strategy?'],
+   ['.basin-adapt-menu','Choose carefully','Selecting a ninth strategy costs twice as much. The other strategy values do not double.'],
+   ['.basin-adapt-sidebar','Add it—or hold your ground','Review your choice, allocate extra water to the Lake or to Basin Supply, then add the strategy to your package. Or skip the ninth strategy entirely.']
+  ],
+  results:[
+   ['#basin-score-content','Check the outcome','Review your final scores and earned badges. Can everybody in your group live with this scenario?'],
+   ['.basin-report','Tell the story','Record your group’s reflections, disagreements, and what it would take to make your strategies work.'],
+   ['[data-submit-report]','Don’t forget to submit!','Submit the group’s scenario once. Everyone in the room will then see the completion screen.']
+  ]
+ };
+ const overlay=document.createElement('div'); overlay.id='basin-tour';overlay.hidden=true;
+ overlay.setAttribute('role','dialog');overlay.setAttribute('aria-modal','true');overlay.setAttribute('aria-labelledby','basin-tour-heading');
+ overlay.innerHTML='<div class="tour-spotlight" aria-hidden="true"></div><div class="tour-tip"><div class="tour-step"></div><h2 id="basin-tour-heading"></h2><p></p><div class="tour-actions"><button type="button" class="tour-next">Next →</button></div></div>';
+ document.body.appendChild(overlay);
+ const spotlight=overlay.querySelector('.tour-spotlight'),tip=overlay.querySelector('.tour-tip');
+ let stage='',idx=0,run=[];let previousFocus=null;
+ const roomKey='basin-guided-tour:'+location.pathname+location.search+':';
+ // Share one scroll lock between all three overlays. Do not lock position:
+ // spotlight.scrollIntoView must still be able to reveal each target.
+ function modalVisible(el){return Boolean(el && !el.hidden && getComputedStyle(el).display!=='none');}
+ function syncScrollLock(){
+  const locked=modalVisible(overlay)||modalVisible(intro)||modalVisible(climate);
+  document.documentElement.classList.toggle('basin-modal-open',locked);
+  document.body.classList.toggle('basin-modal-open',locked);
+ }
+ // Overlay captures wheel/touch scrolling; no accidental page movement during a tour.
+ overlay.addEventListener('wheel',e=>e.preventDefault(),{passive:false});
+ overlay.addEventListener('touchmove',e=>e.preventDefault(),{passive:false});
+ document.addEventListener('keydown',e=>{
+  if(overlay.hidden)return;
+  if(['ArrowDown','ArrowUp','PageDown','PageUp','Home','End',' '].includes(e.key))e.preventDefault();
+ },{capture:true});
+
+ function close(){overlay.hidden=true;syncScrollLock(); if(stage){try{sessionStorage.setItem(roomKey+stage,'yes')}catch(e){}};stage='';run=[]; if(previousFocus?.isConnected)previousFocus.focus({preventScroll:true});}
+ function show(){if(overlay.hidden)return;
+  let item=run[idx];if(!item){close();return}
+  let el=document.querySelector(item[0]);if(!el){idx++;show();return}
+  // Step 1, tip 4: return to the top of the board to see the Live Score.
+  // Other tips continue to scroll their highlighted control into view.
+  if(stage==='build' && item[1]==='Watch your scores'){
+   window.scrollTo({top:0,left:0,behavior:'instant'});
+  }else{
+   el.scrollIntoView({block:'nearest',inline:'nearest',behavior:'instant'});
+  }
+  const rect=el.getBoundingClientRect();let pad=7;
+  spotlight.style.left=Math.max(5,rect.left-pad)+'px';spotlight.style.top=Math.max(5,rect.top-pad)+'px';
+  spotlight.style.width=Math.max(18,Math.min(innerWidth-10,rect.width+pad*2))+'px';
+  spotlight.style.height=Math.max(18,Math.min(innerHeight-10,rect.height+pad*2))+'px';
+  overlay.querySelector('.tour-step').textContent='QUICK TOUR · '+(idx+1)+' OF '+run.length;
+  overlay.querySelector('h2').textContent=item[1];
+  const tourDescription=overlay.querySelector('p');tourDescription.textContent=item[2];
+  if(item[3]){const extra=document.createElement('strong');extra.className='tour-emphasis';extra.textContent=item[3];tourDescription.append(document.createElement('span'),extra);}
+  overlay.querySelector('.tour-next').textContent=idx===run.length-1?'Let’s play! ✓':'Next →';
+  tip.style.zoom='1'; const naturalHeight=tip.offsetHeight||205; const availableHeight=Math.max(120,innerHeight-24); const scale=Math.min(1,availableHeight/naturalHeight); tip.style.zoom=String(scale);
+  const h=(tip.offsetHeight||205)*scale,w=(tip.offsetWidth||640)*scale;
+  const below=rect.bottom+20;const above=rect.top-h-20;
+  const useAbove=below+h>innerHeight-10 && above>10;
+  tip.classList.toggle('is-above',useAbove);
+  tip.style.top=Math.min(innerHeight-h-12,Math.max(12,useAbove?above:below))+'px';
+  tip.style.left=Math.min(innerWidth-w-12,Math.max(12,rect.left))+'px';
+  overlay.querySelector('.tour-next').focus({preventScroll:true});
+ }
+ function start(targetStage){if(stage || !steps[targetStage])return;
+  if(!intro.hidden || !climate.hidden)return;
+  try{if(sessionStorage.getItem(roomKey+targetStage)==='yes')return}catch(e){}
+  const available=steps[targetStage].filter(a=>document.querySelector(a[0]) && document.querySelector(a[0]).getClientRects().length);
+  if(!available.length)return;
+  previousFocus=document.activeElement;stage=targetStage;run=available;idx=0;overlay.hidden=false;syncScrollLock();
+  requestAnimationFrame(show);
+ }
+ overlay.querySelector('.tour-next').addEventListener('click',()=>{idx++;show()});
+ document.addEventListener('keydown',e=>{if(!overlay.hidden&&e.key==='Escape')e.preventDefault()});
+ window.addEventListener('resize',()=>{if(!overlay.hidden)show()});
+ let pending=null;
+ function schedule(){clearTimeout(pending);pending=setTimeout(()=>{if(!overlay.hidden)return;start(main.dataset.stage||'build')},210)}
+ new MutationObserver(schedule).observe(main,{attributes:true,attributeFilter:['data-stage']});
+ if(intro)new MutationObserver(()=>{syncScrollLock();schedule()}).observe(intro,{attributes:true,attributeFilter:['hidden']});
+ if(climate)new MutationObserver(()=>{syncScrollLock();schedule()}).observe(climate,{attributes:true,attributeFilter:['hidden']});
+ // Initial game and delayed joined-room render.
+ document.addEventListener('click',e=>{if(e.target.closest('#basin-scribe-begin,#basin-climate-warning button'))schedule()});
+ syncScrollLock();
+ setTimeout(schedule,500);
 })();
 </script>
 
