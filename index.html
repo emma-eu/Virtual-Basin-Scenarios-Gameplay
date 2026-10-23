@@ -1535,7 +1535,7 @@ html.basin-modal-open, body.basin-modal-open { overflow:hidden !important; overs
     root.querySelector('#basin-metrics').innerHTML=[
       ['Cost',s.cost,''],['Lake',s.currentLake,''],['Basin supply',s.currentSupply,''],
       ['Ecosystem health',s.eco,s.packageComplete?`${s.eco-s.bonus} ${s.bonus>=0?'+':'−'} ${Math.abs(s.bonus)} lake bonus = ${s.eco}`:''],
-      ['Agriculture & economy',s.ag,''],
+      ['Agriculture',s.ag,''],
       ['Dust reduction',s.dust,s.packageComplete?`${s.dust-s.bonus} ${s.bonus>=0?'+':'−'} ${Math.abs(s.bonus)} lake bonus = ${s.dust}`:'']
     ].map(([name,value,detail])=>{
       const isSupply=name==='Basin supply';
