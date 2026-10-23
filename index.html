@@ -978,6 +978,41 @@ body.basin-custom-rules-open{overflow:hidden!important}
 #basin-gui .basin-custom-form p{font-size:12px;line-height:1.45;margin:0;}
 #basin-gui .basin-custom-form button{justify-self:start;max-width:100%;}
 @media(max-width:620px){#basin-gui .basin-custom-scores{grid-template-columns:repeat(2,minmax(0,1fr));}}
+
+/* Full scenario reference alongside the final discussion and survey. */
+#basin-gui .basin-main[data-stage="results"] .basin-package{width:100%;max-width:none;padding:12px;}
+#basin-gui .basin-main[data-stage="results"] .basin-phase{width:100%;}
+#basin-gui .basin-final-layout{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(300px,.88fr);gap:16px;align-items:start;width:100%;}
+#basin-gui .basin-final-layout>section{min-width:0;background:#fff;border:1px solid #a6c0c4;border-radius:12px;padding:15px;}
+#basin-gui .basin-final-board-head h2,#basin-gui .basin-final-prompts h2{font-size:20px;margin:0 0 5px;color:#164050;}
+#basin-gui .basin-final-board-head p{margin:0 0 10px;font-size:12px;}
+#basin-gui .basin-final-board-section{border-top:1px solid #c4d7da;padding:9px 0;}
+#basin-gui .basin-final-board-section h3{font-size:14px;color:#164050;margin:0 0 7px;}
+#basin-gui .basin-final-strategies{list-style:none;padding:0;margin:0;display:grid;gap:4px;}
+#basin-gui .basin-final-strategy{display:flex;align-items:start;gap:8px;padding:6px 7px;border:1px solid #d5e2e4;border-radius:6px;background:#f5fafb;}
+#basin-gui .basin-final-strategy.is-ninth{border-color:#eca625;background:#fff7e5;}
+#basin-gui .basin-final-index{display:grid;place-items:center;flex:0 0 23px;height:23px;background:#164050;color:#fff;border-radius:5px;font-size:12px;font-weight:800;}
+#basin-gui .basin-final-strategy strong{display:block;font-size:12px;color:#164050;line-height:1.3;}
+#basin-gui .basin-final-strategy small{display:block;font-size:10px;color:#42616c;line-height:1.5;margin-top:2px;}
+#basin-gui .basin-final-muted{font-size:12px;margin:5px 0;}
+#basin-gui .basin-final-facts{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+#basin-gui .basin-final-facts>div{display:flex;flex-direction:column;gap:3px;padding:7px;background:#ecf5f6;border-radius:6px;min-width:0;}
+#basin-gui .basin-final-facts span{font-size:11px;color:#405c65;}
+#basin-gui .basin-final-facts strong{font-size:15px;color:#164050;overflow-wrap:anywhere;}
+#basin-gui .basin-final-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;}
+#basin-gui .basin-final-metrics>div{display:flex;justify-content:space-between;gap:4px;padding:7px;background:#e5f3f4;border-radius:6px;color:#164050;font-size:11px;}
+#basin-gui .basin-final-metrics strong{font-size:14px;}
+#basin-gui .basin-final-supply{margin:8px 0;padding:8px;border-radius:6px;color:#fff;font-weight:750;font-size:12px;}
+#basin-gui .basin-final-supply.is-met{background:#175b40;}
+#basin-gui .basin-final-supply.is-below{background:#88332c;}
+#basin-gui .basin-final-badge-title{margin-top:10px!important;}
+#basin-gui .basin-final-badges{display:flex;gap:5px;flex-wrap:wrap;}
+#basin-gui .basin-final-badge{padding:5px 7px;background:#e0f5e6;color:#145331;border:1px solid #16803a;border-radius:6px;font-size:11px;font-weight:700;}
+#basin-gui .basin-final-prompts .basin-report{max-width:none;margin-top:12px;}
+#basin-gui .basin-final-prompts .basin-report textarea{min-height:100px;}
+@media(max-width:1000px){#basin-gui .basin-final-layout{grid-template-columns:1fr;}#basin-gui .basin-final-layout>section{padding:12px;}}
+@media(min-width:1001px){#basin-gui .basin-final-board{position:sticky;top:12px;}}
+@media(max-width:520px){#basin-gui .basin-final-facts{grid-template-columns:1fr 1fr;}#basin-gui .basin-final-metrics{grid-template-columns:repeat(2,minmax(0,1fr));}}
 </style>
 
 <script>
@@ -1838,7 +1873,12 @@ body.basin-custom-rules-open{overflow:hidden!important}
     }
     if(step==='results'){
       const s=scoreState();
-      panel.innerHTML=`<div class="basin-phase-grid"><div><h2>${s.currentSupply>=4?'Viable basin package':'Basin needs not met'}</h2><p>The final lake bonus and earned badges are shown in the live score above.</p></div><div><span class="basin-stage-kicker">FINAL STEP · GROUP REVIEW</span><h2>Review and submit your group results</h2><p>Make sure everyone can live with the scenario. Record key trade-offs, objections (if any), and what the group learned. Then submit once for the room.</p><div class="basin-summary"><div><span>Cost</span><strong>${s.cost}</strong></div><div><span>Lake / Supply</span><strong>${s.currentLake} / ${s.currentSupply}</strong></div><div><span>Ecosystem / Ag / Dust</span><strong>${s.eco} / ${s.ag} / ${s.dust}</strong></div></div><div class="basin-report"><label>Participants<input data-report="participants" value="${escapeHtml(reportParticipants)}" placeholder="Names or initials, separated by commas"></label><label>Hardest trade-off<textarea data-report="hardest" placeholder="What did your group struggle with?">${escapeHtml(reportHardest)}</textarea></label><label>One takeaway<textarea data-report="takeaway" placeholder="What should the full room hear?">${escapeHtml(reportTakeaway)}</textarea></label><button type="button" class="basin-primary" data-submit-report ${submittedAt?'disabled':''}>${submittedAt?'Report submitted':'Submit room report'}</button><p id="basin-submit-status" class="basin-submit-status ${submittedAt?'is-success':''}">${submittedAt?'This playthrough has been submitted and locked.':''}</p></div></div></div>`;
+      const chosen=selected.map((id,i)=>({strategy:byId(id),slot:i+1})).filter(item=>item.strategy);
+      const eighthCards=chosen.map(({strategy:x,slot})=>`<li class="basin-final-strategy"><span class="basin-final-index">${slot}</span><div><strong>${escapeHtml(x.name)}</strong><small>Cost ${x.cost} · Water ${x.water>0?'+':''}${x.water} · Eco ${x.eco>0?'+':''}${x.eco} · Agriculture ${x.ag>0?'+':''}${x.ag} · Dust ${x.dust>0?'+':''}${x.dust}</small></div></li>`).join('');
+      const ninth=adapted?byId(adaptId):null;
+      const ninthCard=ninth?`<li class="basin-final-strategy is-ninth"><span class="basin-final-index">9</span><div><strong>${escapeHtml(ninth.name)}</strong><small>Cost ${Math.max(1,ninth.cost*2)} (doubled; minimum 1) · Water ${ninth.water>0?'+':''}${ninth.water} · Eco ${ninth.eco>0?'+':''}${ninth.eco} · Agriculture ${ninth.ag>0?'+':''}${ninth.ag} · Dust ${ninth.dust>0?'+':''}${ninth.dust}</small></div></li>`:'<p class="basin-final-muted">No ninth strategy added.</p>';
+      const earnedBadges=s.badges.filter(([,earned])=>earned).map(([name])=>`<span class="basin-final-badge">${escapeHtml(name)}</span>`).join('')||'<span class="basin-final-muted">No badges earned</span>';
+      panel.innerHTML=`<div class="basin-final-layout"><section class="basin-final-board" aria-labelledby="basin-final-board-title"><div class="basin-final-board-head"><h2 id="basin-final-board-title">Your full gameboard</h2><p>Keep this open as your group discusses its answers.</p></div><div class="basin-final-board-section"><h3>Your strategy package</h3><ol class="basin-final-strategies">${eighthCards}${ninthCard}</ol></div><div class="basin-final-board-section"><h3>Water decisions</h3><div class="basin-final-facts"><div><span>Final Lake</span><strong>${s.currentLake}</strong></div><div><span>Final Basin Supply</span><strong>${s.currentSupply}</strong></div><div><span>Water future</span><strong>${escapeHtml(waterFuture?.name||'Not drawn')}${waterFuture?` (${waterFuture.delta>0?'+':''}${waterFuture.delta})`:''}</strong></div><div><span>Lake effect on Eco & Dust</span><strong>${s.bonus>0?'+':''}${s.bonus}</strong></div></div></div><div class="basin-final-board-section"><h3>Final scores</h3><div class="basin-final-metrics"><div>Cost <strong>${s.cost}</strong></div><div>Lake <strong>${s.currentLake}</strong></div><div>Basin <strong>${s.currentSupply}</strong></div><div>Ecosystem <strong>${s.eco}</strong></div><div>Agriculture <strong>${s.ag}</strong></div><div>Dust <strong>${s.dust}</strong></div></div><div class="basin-final-supply ${s.currentSupply>=4?'is-met':'is-below'}">${s.currentSupply>=4?'Basin needs met':'Basin Supply below 4: basin needs not met'}</div><h3 class="basin-final-badge-title">Earned badges</h3><div class="basin-final-badges">${earnedBadges}</div></div></section><section class="basin-final-prompts"><span class="basin-stage-kicker">FINAL STEP · GROUP REVIEW</span><h2>Review and submit your group results</h2><p>Use your full gameboard to discuss what worked, what was difficult, and what would be needed to implement your strategies. Record any disagreements.</p><div class="basin-report"><label>Participants<input data-report="participants" value="${escapeHtml(reportParticipants)}" placeholder="Names or initials, separated by commas"></label><label>Hardest trade-off<textarea data-report="hardest" placeholder="What did your group struggle with?">${escapeHtml(reportHardest)}</textarea></label><label>One takeaway<textarea data-report="takeaway" placeholder="What should the full room hear?">${escapeHtml(reportTakeaway)}</textarea></label><button type="button" class="basin-primary" data-submit-report ${submittedAt?'disabled':''}>${submittedAt?'Report submitted':'Submit room report'}</button><p id="basin-submit-status" class="basin-submit-status ${submittedAt?'is-success':''}">${submittedAt?'This playthrough has been submitted and locked.':''}</p></div></section></div>`;
       renderNavState();
     }
     renderScore();
