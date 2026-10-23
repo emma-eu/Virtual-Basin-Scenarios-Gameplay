@@ -881,6 +881,74 @@ html.basin-modal-open, body.basin-modal-open { overflow:hidden !important; overs
 #basin-gui .basin-score .basin-metric .basin-supply-explanation {display:block;color:#ffffff!important;font-size:10px!important;line-height:1.2!important;font-weight:700!important;text-align:center;max-width:100%;}
 #basin-gui .basin-score .basin-metric:is(.basin-supply-met,.basin-supply-low) {flex-wrap:wrap!important;gap:2px 5px!important;align-content:center!important;}
 #basin-gui .basin-score .basin-metric .basin-supply-explanation {flex-basis:100%!important;}
+
+/* Mobile Step 4: keep the optional skip action visible before the long strategy menu.
+   The same data-advance handler powers the existing desktop skip action. */
+#basin-gui .basin-adapt-mobile-decision { display:none; }
+@media (max-width:780px) {
+  #basin-gui .basin-main[data-stage="adapt"] .basin-adapt-mobile-decision {
+    display:flex !important; align-items:center; justify-content:space-between;
+    flex-wrap:wrap; gap:9px; width:100%; box-sizing:border-box;
+    background:#eaf6f6; color:#164050; border:2px solid #7ab9c1;
+    border-radius:10px; padding:10px 12px; margin:0 0 10px;
+    font-size:14px; font-weight:700;
+  }
+  #basin-gui .basin-adapt-mobile-decision .basin-outline {
+    min-height:46px; border:2px solid #164050; border-radius:8px;
+    background:#ffffff; color:#164050; padding:10px 15px;
+    font-size:15px; font-weight:800; cursor:pointer; margin:0;
+  }
+}
+@media (max-width:420px) {
+  #basin-gui .basin-adapt-mobile-decision .basin-outline { width:100%; }
+}
+
+/* Laptop-friendly scoreboard: no crowded wrap on Basin Supply. */
+#basin-gui .basin-score .basin-metrics {
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(145px,1.35fr) repeat(3,minmax(0,1fr))!important;
+  gap:5px!important;
+}
+#basin-gui .basin-score .basin-metric {
+  box-sizing:border-box; display:flex!important; flex-direction:column!important;
+  align-items:center!important; justify-content:center!important;
+  text-align:center!important; padding:7px 4px!important;
+  gap:3px!important; min-width:0; min-height:78px!important;
+  flex-wrap:nowrap!important;
+}
+#basin-gui .basin-score .basin-metric > span {
+  display:block; width:100%; font-size:12px!important; line-height:1.16!important;
+  overflow-wrap:normal; text-wrap:balance;
+}
+#basin-gui .basin-score .basin-metric > strong {
+  display:block; font-size:23px!important; line-height:1.05!important;
+  flex:0 0 auto;
+}
+#basin-gui .basin-score .basin-metric .basin-supply-explanation {
+  display:block!important; flex:none!important; width:100%;
+  font-size:10px!important; line-height:1.2!important;
+  font-weight:750!important; white-space:normal;
+  text-wrap:balance; overflow-wrap:normal;
+}
+#basin-gui .basin-score .basin-metric .basin-score-breakdown {
+  font-size:10px!important;line-height:1.15!important;
+}
+/* At medium laptop widths stack the lake effects below instead of squeezing metrics. */
+@media (min-width:721px) and (max-width:1160px) {
+  #basin-gui .basin-score-content {grid-template-columns:minmax(0,1fr)!important;}
+  #basin-gui .basin-score-content>.basin-lake-bonus-callout {
+    grid-column:1!important; grid-row:5!important;
+  }
+}
+@media (max-width:720px) {
+  #basin-gui .basin-score .basin-metrics {
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    gap:5px!important;
+  }
+  #basin-gui .basin-score .basin-metric {min-height:80px!important;}
+}
+@media (max-width:420px) {
+  #basin-gui .basin-score .basin-metrics {grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+}
 </style>
 
 <script>
@@ -1539,7 +1607,7 @@ html.basin-modal-open, body.basin-modal-open { overflow:hidden !important; overs
       ['Dust reduction',s.dust,s.packageComplete?`${s.dust-s.bonus} ${s.bonus>=0?'+':'−'} ${Math.abs(s.bonus)} lake bonus = ${s.dust}`:'']
     ].map(([name,value,detail])=>{
       const isSupply=name==='Basin supply';
-      const status=isSupply ? (s.currentSupply>=4 ? 'Basin needs met · extra points buffer drought' : 'Below 4 · basin needs not met') : '';
+      const status=isSupply ? (s.currentSupply>4 ? `Needs met · +${s.currentSupply-4} drought buffer` : s.currentSupply===4 ? 'Needs met · no buffer' : `Need ${4-s.currentSupply} more for basin`) : '';
       const supplyClass=isSupply ? (s.currentSupply>=4 ? 'basin-supply-met' : 'basin-supply-low') : '';
       return `<div class="basin-metric ${detail?'basin-metric-with-bonus':''} ${supplyClass}"><span>${name}</span><strong>${value}</strong>${status?`<small class="basin-supply-explanation">${status}</small>`:''}${detail?`<small class="basin-score-breakdown">${detail}</small>`:''}</div>`;
     }).join('');
@@ -1695,7 +1763,7 @@ html.basin-modal-open, body.basin-modal-open { overflow:hidden !important; overs
       const visibleAdapt=eligible.filter(s=>s.cat===adaptCategory);
       const allocation=a&&a.water>0?`<div class="basin-trays" aria-label="Allocate ninth-strategy water between lake and basin supply"><div class="basin-tray basin-lake"><span>Lake</span><div class="basin-stepper"><button type="button" data-adapt-allocate="lake-minus" ${adaptLake<=0?'disabled':''}>−</button><strong>${adaptLake}</strong><button type="button" data-adapt-allocate="lake-plus" ${adaptSupply<=0?'disabled':''}>+</button></div></div><div class="basin-tray basin-supply"><span>Basin supply</span><div class="basin-stepper"><button type="button" data-adapt-allocate="supply-minus" ${adaptSupply<=0?'disabled':''}>−</button><strong>${adaptSupply}</strong><button type="button" data-adapt-allocate="supply-plus" ${adaptLake<=0?'disabled':''}>+</button></div></div></div>`:'';
       const special=a?.note?`<p class="basin-special-water">Special adjustment: ${a.note}.</p>`:'';
-      panel.innerHTML=`<div class="basin-adapt-workspace"><aside class="basin-adapt-sidebar" aria-label="Ninth strategy decision"><h2>Optional ninth strategy</h2><p>Review the water future and decide whether to add one more strategy.</p><div class="basin-double-cost-warning" role="note"><strong>⚠ Ninth strategy costs DOUBLE (2×)</strong><span>All other scores remain unchanged.</span></div>${a?`<div class="basin-adapt-current"><b>Selected ninth strategy</b><div>${escapeHtml(a.name)}</div><span>Double cost: ${a.cost*2}</span></div>`:'<p>Select a strategy on the right, or skip this step.</p>'}${special}${a&&a.water>0?`<div class="basin-adapt-water-title">Allocate this strategy’s ${a.water} additional water point${a.water===1?'':'s'}</div>`:''}${allocation}<div class="basin-adapt-actions">${a?'<button type="button" class="basin-primary" data-apply-adapt>Add ninth strategy (2× cost)</button>':''}<button type="button" class="basin-outline" data-advance="results">Skip 9th Strategy</button></div></aside><section class="basin-adapt-menu" aria-label="Ninth strategy menu"><div class="basin-panelhead"><div><h2>Strategy menu</h2><p>Browse by category, as in Step 1. Tap a strategy to select it.</p></div></div><label class="basin-adapt-filter-label">Strategy category<select id="basin-adapt-filter" aria-label="Ninth strategy category">${adaptCategories.map(c=>`<option value="${c}" ${c===adaptCategory?'selected':''}>${c}</option>`).join('')}</select></label><div class="basin-adapt-list" role="group" aria-label="Available ninth strategies in selected category">${visibleAdapt.map(s=>`<button type="button" class="basin-adapt-card ${s.id===adaptId?'is-selected':''}" data-select-adapt="${s.id}" aria-pressed="${s.id===adaptId?'true':'false'}"><span class="basin-adapt-name">${escapeHtml(s.name)}</span><span class="basin-adapt-category">${escapeHtml(s.cat)}</span><span class="basin-adapt-values"><span class="basin-doubled-cost"><b>2× COST: ${s.cost} → ${s.cost*2}</b></span><span>Water ${s.water>0?'+':''}${s.water}</span><span>Eco ${s.eco>0?'+':''}${s.eco}</span><span>Ag ${s.ag>0?'+':''}${s.ag}</span><span>Dust ${s.dust>0?'+':''}${s.dust}</span></span>${s.note?`<span class="basin-adapt-note">Special: ${escapeHtml(s.note)}</span>`:''}</button>`).join('')}</div></section></div>`;
+      panel.innerHTML=`<div class="basin-adapt-mobile-decision"><span>Adding a ninth strategy is optional.</span><button type="button" class="basin-outline" data-advance="results">Skip 9th Strategy →</button></div><div class="basin-adapt-workspace"><aside class="basin-adapt-sidebar" aria-label="Ninth strategy decision"><h2>Optional ninth strategy</h2><p>Review the water future and decide whether to add one more strategy.</p><div class="basin-double-cost-warning" role="note"><strong>⚠ Ninth strategy costs DOUBLE (2×)</strong><span>All other scores remain unchanged.</span></div>${a?`<div class="basin-adapt-current"><b>Selected ninth strategy</b><div>${escapeHtml(a.name)}</div><span>Double cost: ${a.cost*2}</span></div>`:'<p>Select a strategy on the right, or skip this step.</p>'}${special}${a&&a.water>0?`<div class="basin-adapt-water-title">Allocate this strategy’s ${a.water} additional water point${a.water===1?'':'s'}</div>`:''}${allocation}<div class="basin-adapt-actions">${a?'<button type="button" class="basin-primary" data-apply-adapt>Add ninth strategy (2× cost)</button>':''}<button type="button" class="basin-outline" data-advance="results">Skip 9th Strategy</button></div></aside><section class="basin-adapt-menu" aria-label="Ninth strategy menu"><div class="basin-panelhead"><div><h2>Strategy menu</h2><p>Browse by category, as in Step 1. Tap a strategy to select it.</p></div></div><label class="basin-adapt-filter-label">Strategy category<select id="basin-adapt-filter" aria-label="Ninth strategy category">${adaptCategories.map(c=>`<option value="${c}" ${c===adaptCategory?'selected':''}>${c}</option>`).join('')}</select></label><div class="basin-adapt-list" role="group" aria-label="Available ninth strategies in selected category">${visibleAdapt.map(s=>`<button type="button" class="basin-adapt-card ${s.id===adaptId?'is-selected':''}" data-select-adapt="${s.id}" aria-pressed="${s.id===adaptId?'true':'false'}"><span class="basin-adapt-name">${escapeHtml(s.name)}</span><span class="basin-adapt-category">${escapeHtml(s.cat)}</span><span class="basin-adapt-values"><span class="basin-doubled-cost"><b>2× COST: ${s.cost} → ${s.cost*2}</b></span><span>Water ${s.water>0?'+':''}${s.water}</span><span>Eco ${s.eco>0?'+':''}${s.eco}</span><span>Ag ${s.ag>0?'+':''}${s.ag}</span><span>Dust ${s.dust>0?'+':''}${s.dust}</span></span>${s.note?`<span class="basin-adapt-note">Special: ${escapeHtml(s.note)}</span>`:''}</button>`).join('')}</div></section></div>`;
       renderNavState();
       // The green selected card and the user's scroll position stay put after +/- clicks.
       const newAdaptList = root.querySelector('.basin-adapt-list');
