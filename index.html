@@ -278,6 +278,17 @@ html.basin-modal-open, body.basin-modal-open { overflow:hidden !important; overs
  #basin-climate-warning .basin-climate-warning-card{padding:clamp(10px,3vw,22px)}
 }
 @media(prefers-reduced-motion:reduce){#basin-tour .tour-spotlight{transition:none}}
+
+/* Single optional custom-strategy rules popup; light-mode and laptop/mobile friendly. */
+#basin-custom-rules-dialog[hidden]{display:none!important}
+#basin-custom-rules-dialog{position:fixed;inset:0;z-index:11020;background:rgba(10,37,48,.72);display:grid;place-items:center;padding:16px;box-sizing:border-box}
+#basin-custom-rules-dialog .basin-custom-notice{width:min(850px,100%);background:#fffdf7;color:#164050;border:3px solid #eca625;border-radius:16px;padding:clamp(16px,3vw,30px);box-sizing:border-box;box-shadow:0 20px 60px #0005}
+#basin-custom-rules-dialog h2{font-size:clamp(21px,3vw,28px);margin:0 0 12px}
+#basin-custom-rules-dialog p{font-size:clamp(14px,1.5vw,17px);line-height:1.5;margin:0 0 14px}
+#basin-custom-rules-dialog .basin-custom-notice-actions{display:flex;justify-content:flex-end;gap:12px;flex-wrap:wrap}
+#basin-custom-rules-dialog button{font-size:15px;font-weight:800;border-radius:9px;min-height:44px;padding:9px 16px;border:2px solid #164050;background:#fff;color:#164050;cursor:pointer}
+#basin-custom-rules-dialog button.basin-primary{background:#164050;color:#fff;border:3px solid #eca625}
+body.basin-custom-rules-open{overflow:hidden!important}
 </style>
 </head>
 <body>
@@ -365,6 +376,7 @@ html.basin-modal-open, body.basin-modal-open { overflow:hidden !important; overs
               <option value="Municipal">Municipal</option>
               <option value="Industry">Industry</option>
               <option value="Operations">Operations</option>
+              <option value="Custom">✏️ Custom strategy</option>
             </select>
           </label>
         </div>
@@ -957,6 +969,15 @@ html.basin-modal-open, body.basin-modal-open { overflow:hidden !important; overs
   border: 3px solid #eca625 !important;
   box-sizing: border-box;
 }
+
+/* Custom strategy editing — compact on desktop, stack on phones. */
+#basin-gui .basin-custom-form{margin:12px 0;padding:15px;background:#ecf7f6;border:2px solid #7ab9c1;border-radius:10px;color:#164050;display:grid;gap:12px;}
+#basin-gui .basin-custom-form label{display:grid;gap:4px;font-size:12px;font-weight:800;}
+#basin-gui .basin-custom-form input{box-sizing:border-box;width:100%;min-width:0;padding:10px;border:1px solid #729ca4;border-radius:7px;background:#fff;color:#164050;font:inherit;font-size:16px;}
+#basin-gui .basin-custom-scores{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px;}
+#basin-gui .basin-custom-form p{font-size:12px;line-height:1.45;margin:0;}
+#basin-gui .basin-custom-form button{justify-self:start;max-width:100%;}
+@media(max-width:620px){#basin-gui .basin-custom-scores{grid-template-columns:repeat(2,minmax(0,1fr));}}
 </style>
 
 <script>
@@ -1340,6 +1361,7 @@ html.basin-modal-open, body.basin-modal-open { overflow:hidden !important; overs
     {id:'early-runoff',name:'Earlier Runoff',delta:-2,lake:-1,supply:-1,description:'Earlier snowmelt reduces reservoir carryover and dependable late-season flows.'},
     {id:'wet',name:'Wetter Period',delta:2,lake:1,supply:1,description:'Cooler, wetter conditions improve basin supplies and flows reaching the lake.'}
   ];
+  let customStrategies = []; // Room-synced, participant-proposed strategies
   let selected = [];
   let lake = 0, supply = 0, waterFuture = null, adapted = false, adaptId = null, adaptLake = 0, adaptSupply = 0, phase = 'build', packageLocked = false;
   let reportParticipants = '', reportHardest = '', reportTakeaway = '';
@@ -1351,7 +1373,7 @@ html.basin-modal-open, body.basin-modal-open { overflow:hidden !important; overs
   let syncReady = false, applyingRemote = false, syncTimer = null, lastSyncedState = '';
   const completedSteps = new Set();
   const phaseOrder = ['build','shock','adapt','results'];
-  const byId = id => strategies.find(s => s.id === id);
+  const byId = id => strategies.find(s => s.id === id) || customStrategies.find(s => s.id === id);
   const escapeHtml = value => String(value??'').replace(/[&<>"]/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]));
   const counts = () => selected.reduce((a,id)=>(a[id]=(a[id]||0)+1,a),{});
   const eligibleAdaptStrategies = () => { const c=counts(); return strategies.filter(s=>(c[s.id]||0)<(s.max||2)); };
@@ -1386,7 +1408,7 @@ html.basin-modal-open, body.basin-modal-open { overflow:hidden !important; overs
   }
   function serializeGameState(){
     return {
-      selected:[...selected],lake,supply,sharedCategory,waterFutureId:waterFuture?.id||null,
+      selected:[...selected],customStrategies:customStrategies.map(s=>({...s})),lake,supply,sharedCategory,waterFutureId:waterFuture?.id||null,
       adapted,adaptId,adaptLake,adaptSupply,phase,packageLocked,
       completedSteps:[...completedSteps],reportParticipants,reportHardest,reportTakeaway,
       submittedAt,score:exportScore()
@@ -1395,8 +1417,14 @@ html.basin-modal-open, body.basin-modal-open { overflow:hidden !important; overs
   function applyGameState(state){
     if(!state||typeof state!=='object') return;
     applyingRemote=true;
+    // Restore custom definitions before resolving selected IDs and ninth strategy.
+    customStrategies=Array.isArray(state.customStrategies)?state.customStrategies.slice(0,1).filter(s=>s&&typeof s.id==='string'&&/^custom-[a-z0-9-]+$/.test(s.id)).map(s=>({
+      id:s.id,name:String(s.name||'Custom strategy').slice(0,120),cat:'Custom',max:1,
+      cost:Math.max(1,Math.min(5,Number(s.cost)||1)),water:Math.max(-3,Math.min(3,Number(s.water)||0)),
+      eco:Math.max(-3,Math.min(3,Number(s.eco)||0)),ag:Math.max(-3,Math.min(3,Number(s.ag)||0)),dust:Math.max(-3,Math.min(3,Number(s.dust)||0))
+    })):[];
     selected=Array.isArray(state.selected)?state.selected.filter(id=>byId(id)).slice(0,8):[];
-    sharedCategory=['Agriculture','Habitat','Infrastructure','Municipal','Industry','Operations'].includes(state.sharedCategory)?state.sharedCategory:'Agriculture';
+    sharedCategory=['Agriculture','Habitat','Infrastructure','Municipal','Industry','Operations','Custom'].includes(state.sharedCategory)?state.sharedCategory:'Agriculture';
     root.querySelector('#basin-filter').value=sharedCategory;
     lake=Math.max(0,Number(state.lake)||0);
     supply=Math.max(0,Number(state.supply)||0);
@@ -1554,16 +1582,40 @@ html.basin-modal-open, body.basin-modal-open { overflow:hidden !important; overs
       root.querySelector('#basin-room-note').textContent=error.message||'Check this room link and the Supabase setup.';
     }
   }
+  // Custom ideas use group-assigned scores; all values are stored in the room's shared state.
+  function customStrategyForm(context){
+    return `<form class="basin-custom-form" data-custom-form="${context}" aria-label="Create custom strategy">
+      <label class="basin-custom-name">Strategy name<input name="custom-name" required maxlength="120" placeholder="Describe your group's idea" autocomplete="off"></label>
+      <div class="basin-custom-scores">
+        ${[['cost','Cost',1,5],['water','Water',-3,3],['eco','Ecosystem',-3,3],['ag','Agriculture',-3,3],['dust','Dust',-3,3]].map(([k,label,min,max])=>`<label>${label}<input type="number" name="custom-${k}" min="${min}" max="${max}" step="1" value="${k==='cost'?1:0}" required></label>`).join('')}
+      </div>
+      <p>Group-estimated scores (not validated). Cost: 1–5, lower is better. All other scores: −3 to +3, higher is better. Only one custom strategy per group (in the first eight).</p>
+      <button type="submit" class="basin-primary">${context==='adapt'?'Create & choose ninth strategy':'Create custom strategy'}</button>
+    </form>`;
+  }
+  function makeCustomStrategy(form){
+    if(!form.reportValidity())return null;
+    const value=k=>Number(form.elements.namedItem('custom-'+k)?.value);
+    const name=String(form.elements.namedItem('custom-name')?.value||'').trim();
+    if(!name||name.length>120||customStrategies.length>=1)return null;
+    const bounds={cost:[1,5],water:[-3,3],eco:[-3,3],ag:[-3,3],dust:[-3,3]};
+    const nums={};
+    for(const [k,[lo,hi]] of Object.entries(bounds)){const n=value(k);if(!Number.isInteger(n)||n<lo||n>hi)return null;nums[k]=n;}
+    const id='custom-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,9);
+    const item={id,name,cat:'Custom',max:1,...nums};
+    customStrategies.push(item);
+    return item;
+  }
   function renderCards(){
     const filter = sharedCategory;
     root.querySelector('#basin-filter').value=sharedCategory;
     const c = counts();
     root.querySelector('#basin-filter').disabled=packageLocked;
-    root.querySelector('#basin-cards').innerHTML = strategies.filter(s=>s.cat===filter).map(s=>{
+    root.querySelector('#basin-cards').innerHTML = [...strategies,...customStrategies].filter(s=>s.cat===filter).map(s=>{
       const count=c[s.id]||0, max=s.max||2, full=selected.length>=8||packageLocked;
       const waterLabel=s.note||`Water ${s.water}`;
-      return `<article class="basin-strategy" data-category="${s.cat}"><div><strong>${s.name}</strong><small>${s.cat}<br>Cost ${s.cost} · ${waterLabel} · Eco ${s.eco} · Ag ${s.ag} · Dust ${s.dust}</small></div><div class="basin-card-actions"><button type="button" data-add="${s.id}" ${(full||count>=1)?'disabled':''}>+ Add</button><button type="button" data-double="${s.id}" ${(full||count!==1||max===1)?'disabled':''}>${count>=2?'2× added':'2×'}</button></div></article>`;
-    }).join('');
+      return `<article class="basin-strategy" data-category="${s.cat}"><div><strong>${escapeHtml(s.name)}</strong><small>${escapeHtml(s.cat)}<br>Cost ${s.cost} · ${waterLabel} · Eco ${s.eco} · Ag ${s.ag} · Dust ${s.dust}</small></div><div class="basin-card-actions"><button type="button" data-add="${s.id}" ${(full||count>=1)?'disabled':''}>+ Add</button><button type="button" data-double="${s.id}" ${(full||count!==1||max===1)?'disabled':''}>${count>=2?'2× added':'2×'}</button></div></article>`;
+    }).join('')+(filter==='Custom'&&!packageLocked&&selected.length<8&&customStrategies.length===0?customStrategyForm('build'):'');
   }
   function renderSlots(){
     const slots = Array.from({length:8},(_,i)=>selected[i]);
@@ -1571,7 +1623,7 @@ html.basin-modal-open, body.basin-modal-open { overflow:hidden !important; overs
     root.querySelector('#basin-slots').innerHTML = slots.map((id,i)=>{
       if(!id) return `<div class="basin-slot"><span class="slot-num">${i+1}</span><strong>Open slot</strong><small>Choose together</small></div>`;
       seen[id]=(seen[id]||0)+1;
-      return `<div class="basin-slot is-filled"><span class="slot-num">${i+1}${seen[id]===2?' · 2× play':''}</span><strong>${byId(id).name}</strong><small>${byId(id).cat}</small><button type="button" data-remove="${i}" aria-label="Remove ${byId(id).name}" ${packageLocked?'disabled':''}>×</button></div>`;
+      return `<div class="basin-slot is-filled"><span class="slot-num">${i+1}${seen[id]===2?' · 2× play':''}</span><strong>${escapeHtml(byId(id).name)}</strong><small>${escapeHtml(byId(id).cat)}</small><button type="button" data-remove="${i}" aria-label="Remove ${escapeHtml(byId(id).name)}" ${packageLocked?'disabled':''}>×</button></div>`;
     }).join('');
     root.querySelector('#basin-package-status').textContent = `${selected.length} of 8 cards selected`;
     root.querySelector('#basin-return-allocation').hidden=!(editingCompletePackage&&selected.length===8);
@@ -1798,6 +1850,66 @@ html.basin-modal-open, body.basin-modal-open { overflow:hidden !important; overs
     try{sessionStorage.setItem(climateKey,'1');}catch(_e){}
   };
   document.getElementById('basin-climate-continue').addEventListener('click',dismissClimateWarning);
+
+  /* Custom strategy rules appear before the form; the notice is not a bypass of game tours. */
+  const customNotice=document.createElement('div');
+  customNotice.id='basin-custom-rules-dialog';
+  customNotice.hidden=true;
+  customNotice.innerHTML=`<div class="basin-custom-notice" role="dialog" aria-modal="true" aria-labelledby="basin-custom-rules-title">
+    <h2 id="basin-custom-rules-title">Custom Strategy Rules</h2>
+    <p>If the majority of your team agrees that something critical is missing from the existing strategies menu and you believe you can enter reasonable assumptions for the values of the scoring categories, you may add and play one custom strategy in your 8 card portfolio. Your assumptions must remain within the ranges provided above for each scoring category.</p>
+    <p><strong>Cost: 1–5.</strong> <strong>Water, Ecosystem, Agriculture, and Dust: −3 to +3.</strong></p>
+    <div class="basin-custom-notice-actions"><button type="button" data-custom-cancel>Back to strategies</button><button type="button" class="basin-primary" data-custom-accept>Understand — continue →</button></div>
+  </div>`;
+  document.body.appendChild(customNotice);
+  let customNoticeReturn='Agriculture';
+  function showCustomNotice(previous){
+    if(customStrategies.length || packageLocked)return;
+    customNoticeReturn=previous||'Agriculture';
+    customNotice.hidden=false;
+    document.body.classList.add('basin-custom-rules-open');
+    customNotice.querySelector('[data-custom-accept]').focus();
+  }
+  function closeCustomNotice(accepted){
+    customNotice.hidden=true;
+    document.body.classList.remove('basin-custom-rules-open');
+    if(!accepted){sharedCategory=customNoticeReturn;renderCards();}
+    else root.querySelector('[name="custom-name"]')?.focus();
+  }
+  customNotice.addEventListener('click',e=>{
+    if(e.target.closest('[data-custom-cancel]'))closeCustomNotice(false);
+    if(e.target.closest('[data-custom-accept]'))closeCustomNotice(true);
+  });
+
+  root.addEventListener('submit',e=>{
+    const form=e.target.closest('[data-custom-form]');
+    if(!form)return;
+    e.preventDefault();
+    if(submittedAt)return;
+    const context=form.dataset.customForm;
+    if(context==='build'&&(packageLocked||selected.length>=8||customStrategies.length>=1))return;
+    if(context!=='build')return;
+    const item=makeCustomStrategy(form);
+    if(!item)return;
+    if(context==='build'){
+      sharedCategory='Custom';
+      resetLaterStages();
+      selected.push(item.id);
+      rebalance();
+      renderBuild();
+    }else{
+      adaptCategory='Custom';
+      adaptId=item.id;
+      const points=item.water;
+      if(points<0){
+        const base=scoreState();
+        adaptLake=-Math.min(-points,base.currentLake);
+        adaptSupply=points-adaptLake;
+      }else{adaptLake=points;adaptSupply=0;}
+      setStep('adapt');
+    }
+    queueRoomSync();
+  });
   root.addEventListener('click',e=>{
     if(submittedAt) return;
     if(e.target.closest('[data-edit-package]')){editingCompletePackage=true;renderBuild();return;}
@@ -1871,8 +1983,10 @@ html.basin-modal-open, body.basin-modal-open { overflow:hidden !important; overs
   });
   root.querySelector('#basin-filter').addEventListener('change',e=>{
     if(packageLocked||submittedAt) return;
+    const previous=sharedCategory;
     sharedCategory=e.target.value;
     renderCards();
+    if(sharedCategory==='Custom' && customStrategies.length===0)showCustomNotice(previous);
     queueRoomSync();
   });
   root.addEventListener('input',e=>{
