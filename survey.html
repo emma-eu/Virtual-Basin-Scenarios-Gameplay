@@ -1633,7 +1633,7 @@ body.basin-custom-rules-open{overflow:hidden!important}
     root.querySelector('#basin-stage-help').innerHTML=guide[2];
     if(stage!==displayedStage){
       displayedStage=stage;
-      if(stage!=='build' && !applyingRemote) window.scrollTo({top:0,behavior:'smooth'});
+      if(stage!=='build') window.scrollTo({top:0,behavior:'smooth'});
     }
   }
   function renderBuild(){
@@ -1792,7 +1792,18 @@ body.basin-custom-rules-open{overflow:hidden!important}
     const add=e.target.closest('[data-add]'); if(add){const s=byId(add.dataset.add),c=counts();if(!packageLocked&&selected.length<8&&(c[s.id]||0)===0){resetLaterStages();selected.push(s.id);rebalance();renderBuild();}return;}
     const double=e.target.closest('[data-double]'); if(double){const s=byId(double.dataset.double),c=counts();if(!packageLocked&&selected.length<8&&(c[s.id]||0)===1&&(s.max||2)>1){resetLaterStages();selected.push(s.id);rebalance();renderBuild();}return;}
     const rem=e.target.closest('[data-remove]'); if(rem){if(!packageLocked){resetLaterStages();selected.splice(Number(rem.dataset.remove),1);rebalance();renderBuild();}return;}
-    const draw=e.target.closest('[data-draw-future]'); if(draw){if(phase==='shock'&&!waterFuture){waterFuture=futures[Math.floor(Math.random()*futures.length)];setStep('shock');}return;}
+    const draw=e.target.closest('[data-draw-future]');
+    if(draw){
+      if(waterFuture) return;
+      // Use the same guarded transition as the phase navigation and allocation lock.
+      if(phase!=='shock') setStep('shock');
+      if(phase!=='shock') return;
+      waterFuture=futures[Math.floor(Math.random()*futures.length)];
+      // setStep redraws the future card; renderScore applies the future to live totals/badges.
+      renderScore();
+      setStep('shock');
+      return;
+    }
     const adv=e.target.closest('[data-advance]'); if(adv){setStep(adv.dataset.advance);return;}
     if(e.target.closest('#basin-lock')){setStep('shock');return;}
     const allocation=e.target.closest('[data-allocate]'); if(allocation){
