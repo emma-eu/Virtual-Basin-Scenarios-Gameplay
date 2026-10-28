@@ -1413,8 +1413,6 @@ body.basin-custom-rules-open{overflow:hidden!important}
   const phaseOrder = ['build','shock','adapt','results'];
   const byId = id => strategies.find(s => s.id === id) || customStrategies.find(s => s.id === id);
   const escapeHtml = value => String(value??'').replace(/[&<>"]/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]));
-  // Keep survey submissions compatible with the strategy IDs used by the original survey backend.
-  const surveyStrategyId = id => ({berms:'berms-wetlands',forest:'forests',import:'imports'}[id] || id);
   const counts = () => selected.reduce((a,id)=>(a[id]=(a[id]||0)+1,a),{});
   const eligibleAdaptStrategies = () => { const c=counts(); return strategies.filter(s=>(c[s.id]||0)<(s.max||2)); };
   const resetLaterStages = () => { waterFuture=null; adapted=false; adaptId=null; adaptLake=0; adaptSupply=0; };
@@ -1894,16 +1892,25 @@ body.basin-custom-rules-open{overflow:hidden!important}
     let participantId=localStorage.getItem(participantKey);
     if(!participantId){participantId=crypto.randomUUID();localStorage.setItem(participantKey,participantId);}
     const client=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-    const payload={campaign,token,participantId,currentUrl:location.href,state:{selected:selected.map(surveyStrategyId),customStrategies:customStrategies.map(strategy=>({...strategy})),lake,supply,waterFutureId:waterFuture?.id,adapted,adaptId:adapted?surveyStrategyId(adaptId):null,adaptLake:adapted?adaptLake:0,adaptSupply:adapted?adaptSupply:0,score:exportScore(),durationMinutes:Math.max(1,Math.round((Date.now()-startedAt)/60000))},feedback:{priority:data.priority,acceptability:Number(data.acceptability),topStrategy:surveyStrategyId(data.topStrategy),hardest:data.hardest,message:data.message,connection:data.connection||'',zip:data.zip||''}};
+    const payload={campaign,token,participantId,currentUrl:location.href,state:{selected:[...selected],customStrategies:customStrategies.map(strategy=>({...strategy})),lake,supply,waterFutureId:waterFuture?.id,adapted,adaptId:adapted?adaptId:null,adaptLake:adapted?adaptLake:0,adaptSupply:adapted?adaptSupply:0,score:exportScore(),durationMinutes:Math.max(1,Math.round((Date.now()-startedAt)/60000))},feedback:{priority:data.priority,acceptability:Number(data.acceptability),topStrategy:data.topStrategy,hardest:data.hardest,message:data.message,connection:data.connection||'',zip:data.zip||''}};
     const {data:result,error}=await client.functions.invoke('submit-survey',{body:payload});
     if(error||!result?.ok){
       button.disabled=false;button.textContent='Submit my response';
       let message=result?.error||error?.message||'Your response could not be submitted. Please try again.';
-      if(error?.context?.json){
-        try{const details=await error.context.json();message=details?.error||details?.message||message;}catch(_e){}
+      const response=error?.context;
+      if(response?.clone){
+        try{
+          const rawBody=(await response.clone().text()).trim();
+          if(rawBody){
+            try{const details=JSON.parse(rawBody);message=details?.error||details?.message||rawBody;}
+            catch(_e){message=rawBody;}
+          }
+        }catch(_e){}
       }
-      const statusCode=error?.context?.status;
-      status.textContent=statusCode?`${message} (HTTP ${statusCode})`:message;
+      const statusCode=response?.status;
+      const errorCode=response?.headers?.get?.('sb-error-code');
+      const detailSuffix=[statusCode?`HTTP ${statusCode}`:'',errorCode||''].filter(Boolean).join(' · ');
+      status.textContent=`${message.slice(0,500)}${detailSuffix?` (${detailSuffix})`:''}`;
       status.className='basin-submit-status is-error';return;
     }
     surveySubmitted=true;showSurveyThanks();
