@@ -7,6 +7,6 @@ Link/instructions for virtual hosting:
   - Remember to update: workshop name, group number, and unique token
 
 Link/instructions for survey mode: 
-  - https://emma-eu.github.io/Virtual-Basin-Scenarios-Gameplay/survey.html?survey=basin-survey-2026&token=5b4314c4891036d7bad62e98ef0ea9d513db4
+  - https://emma-eu.github.io/Virtual-Basin-Scenarios-Gameplay/survey.html?survey=basin-survey-2026&token=5b4314c4891036d7bad62e98ef0ea9d513db
 
 Results are hosted here: https://docs.google.com/spreadsheets/d/17Egg_aMH0JC3TyLYIpjb5g2mFOb1EFBqIGLJcTZEi_E/edit?gid=725635605#gid=725635605
