@@ -1427,7 +1427,7 @@ body.basin-custom-rules-open{overflow:hidden!important}
     const eco=baseEco+bonus, dust=baseDust+bonus;
     const badges=[
       ['Cost conscious',packageComplete&&cost<=16],
-      ['Supply resilient',packageComplete&&currentSupply>=5],
+      ['Supply resilient',packageComplete&&currentSupply>=6],
       ['Lake forward',packageComplete&&currentLake>=9],
       ['Ecosystem strong',packageComplete&&eco>=8],
       ['Agriculture supportive',packageComplete&&ag>=4],
@@ -1494,7 +1494,7 @@ body.basin-custom-rules-open{overflow:hidden!important}
     const badgeSpec=[
       ['Cost conscious',s.cost,16,'≤',s.cost<=16,Math.max(0,Math.min(100,100-Math.max(0,s.cost-16)*10))],
       ['Lake forward',s.currentLake,9,'≥',s.currentLake>=9,Math.max(0,Math.min(100,s.currentLake/9*100))],
-      ['Supply resilient',s.currentSupply,5,'≥',s.currentSupply>=5,Math.max(0,Math.min(100,s.currentSupply/5*100))],
+      ['Supply resilient',s.currentSupply,6,'≥',s.currentSupply>=6,Math.max(0,Math.min(100,s.currentSupply/6*100))],
       ['Ecosystem strong',s.eco,8,'≥',s.eco>=8,Math.max(0,Math.min(100,s.eco/8*100))],
       ['Ag supportive',s.ag,4,'≥',s.ag>=4,Math.max(0,Math.min(100,s.ag/4*100))],
       ['Clean air',s.dust,2,'≥',s.dust>=2,Math.max(0,Math.min(100,s.dust/2*100))],
@@ -1555,7 +1555,7 @@ body.basin-custom-rules-open{overflow:hidden!important}
     };
     const badgeDetails=[
       {name:'Cost conscious',art:badgeArt.cost,value:`Cost ${s.cost}`,rule:'Earn at 16 or less'},
-      {name:'Supply resilient',icon:'shield-check',value:`Supply ${s.currentSupply}`,rule:'Earn at 5 or more'},
+      {name:'Supply resilient',icon:'shield-check',value:`Supply ${s.currentSupply}`,rule:'Earn at 6 or more'},
       {name:'Lake forward',art:badgeArt.lake,value:`Lake ${s.currentLake}`,rule:'Earn at 9 or more'},
       {name:'Ecosystem strong',art:badgeArt.ecosystem,value:`Ecosystem ${s.eco}`,rule:'Earn at 8 or more'},
       {name:'Agriculture supportive',art:badgeArt.agriculture,value:`Agriculture ${s.ag}`,rule:'Earn at 4 or more'},
