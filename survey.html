@@ -1029,6 +1029,45 @@ body.basin-custom-rules-open{overflow:hidden!important}
 #basin-gui .basin-survey-thanks{max-width:680px;margin:40px auto;padding:24px;text-align:center;color:var(--b-text)}
 #basin-gui .basin-survey-thanks h1{margin:0 0 12px;font-size:32px}
 @media(max-width:700px){#basin-gui .basin-survey-scale{grid-template-columns:1fr}#basin-gui .basin-survey-scale label{grid-template-columns:auto 1fr;justify-items:start;text-align:left}}
+
+/* Prominent, touch-friendly return-to-strategies action. */
+#basin-gui .basin-allocation-intro button[data-edit-package]{
+  display:inline-flex!important;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  min-height:52px;
+  padding:12px 21px!important;
+  border:2px solid #164050;
+  border-radius:12px;
+  background:#ffffff;
+  color:#164050;
+  font-size:16px;
+  font-weight:850;
+  line-height:1.25;
+  cursor:pointer;
+  box-shadow:0 3px 0 rgba(22,64,80,.12);
+  transition:background-color .15s ease,box-shadow .15s ease;
+}
+#basin-gui .basin-allocation-intro button[data-edit-package] span[aria-hidden="true"]{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  flex:none;
+  width:32px;
+  height:32px;
+  border-radius:50%;
+  background:#164050;
+  color:#fff;
+  font-size:25px;
+  font-weight:900;
+  line-height:1;
+}
+#basin-gui .basin-allocation-intro button[data-edit-package]:hover{background:#eaf6f6;box-shadow:0 4px 0 rgba(22,64,80,.16)}
+#basin-gui .basin-allocation-intro button[data-edit-package]:focus-visible{outline:3px solid #eca625;outline-offset:3px}
+@media(max-width:590px){
+  #basin-gui .basin-allocation-intro button[data-edit-package]{width:100%;max-width:380px;font-size:15px;padding:10px 14px!important}
+}
 </style>
 
 <script>
@@ -1056,7 +1095,17 @@ body.basin-custom-rules-open{overflow:hidden!important}
   const strategies = [
     {
         "id": "lease",
-        "name": "Expand compensated, voluntary water leasing (ex. split-season leasing) with ag producers or ag water providers",
+        "name": "Expand compensated, voluntary water leasing (ex. split- or full-season leasing) with ag producers",
+        "cat": "Agriculture",
+        "cost": 2,
+        "water": 2,
+        "eco": 0,
+        "ag": 1,
+        "dust": 0
+    },
+    {
+        "id": "lease_providers",
+        "name": "Expand compensated, voluntary water leasing (ex. split-season leasing) with ag water providers",
         "cat": "Agriculture",
         "cost": 2,
         "water": 2,
